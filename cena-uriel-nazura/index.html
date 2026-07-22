@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URIEL × NAZURA — O Fogo e o Silêncio</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --paper: #f2ece0;
+      --ink: #111;
+      --fire: #b5502e;
+      --shadow: #7a7fb0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #ddd;
+      font-family: "Georgia", "Times New Roman", serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2.2rem 1rem 1.4rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      letter-spacing: 0.3em;
+      font-weight: 400;
+      color: var(--paper);
+      margin-left: 0.3em;
+    }
+    header h1 .x { color: #555; }
+    header .subtitle {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #777;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+    }
+    header .subtitle .f { color: var(--fire); }
+    header .subtitle .s { color: var(--shadow); }
+    .reader {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 6rem;
+    }
+    .ato { display: none; animation: fade 0.35s ease; }
+    .ato.active { display: block; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .ato-titulo {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .ato-titulo h2 {
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      color: #888;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+    .arte {
+      width: 100%;
+      display: block;
+      border: 1px solid #222;
+      background: #111;
+    }
+    .narracao {
+      margin: 1.1rem 0 0;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #777;
+      line-height: 1.7;
+      text-align: center;
+      padding: 0 1rem;
+    }
+    .balloons {
+      margin-top: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .balloon {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.65rem 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      max-width: 88%;
+    }
+    .balloon.uriel  { align-self: flex-start; border-bottom-left-radius: 2px; border-left: 3px solid var(--fire); }
+    .balloon.nazura { align-self: flex-end;   border-bottom-right-radius: 2px; border-right: 3px solid var(--shadow); }
+    .balloon .who {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .balloon.uriel .who  { color: var(--fire); }
+    .balloon.nazura .who { color: var(--shadow); }
+    .sfx {
+      text-align: center;
+      font-size: 1.05rem;
+      letter-spacing: 0.3em;
+      color: #888;
+      margin: 0.6rem 0 0;
+      font-weight: bold;
+    }
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #111;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem;
+      z-index: 10;
+    }
+    nav button {
+      background: transparent;
+      border: 1px solid #444;
+      color: var(--paper);
+      padding: 0.5rem 1.2rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+    nav button:hover { border-color: var(--paper); }
+    nav button:disabled { opacity: 0.25; cursor: default; }
+    nav span { font-size: 0.8rem; color: #666; min-width: 4.5rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>URIEL <span class="x">×</span> NAZURA</h1>
+  <p class="subtitle"><span class="f">o fogo</span> · encontra · <span class="s">o silêncio</span></p>
+</header>
+
+<div class="reader">
+
+  <!-- ATO 1 -->
+  <div class="ato active" id="ato-0">
+    <div class="ato-titulo"><h2>Ato I — O Encontro</h2></div>
+    <img class="arte" src="artes/cena-01-encontro.png" alt="Uriel e Nazura frente a frente no campo rachado" />
+    <p class="narracao">
+      Um campo de pedra rachada, no fim da tarde. Uriel seguia rastros de saqueadores.
+      Nazura, informações sobre Kriston. Os caminhos se cruzaram — e nenhum dos dois
+      costuma dar passagem.
+    </p>
+    <div class="balloons">
+      <div class="balloon uriel">
+        <span class="who">uriel</span>
+        Garoto. Essa escuridão nos seus pés não é sombra de nuvem. Vou perguntar uma vez: amigo ou contrato?
+      </div>
+      <div class="balloon nazura">
+        <span class="who">nazura</span>
+        Não sou nenhum dos dois. E abaixe essa chama — a claridade só atrapalha os seus olhos. Os meus, não.
+      </div>
+      <p class="sfx">shiiin…</p>
+    </div>
+  </div>
+
+  <!-- ATO 2 -->
+  <div class="ato" id="ato-1">
+    <div class="ato-titulo"><h2>Ato II — O Choque</h2></div>
+    <img class="arte" src="artes/cena-02-choque.png" alt="Punho de fogo contra katana envolta em trevas" />
+    <p class="narracao">
+      Ninguém soube dizer quem se moveu primeiro. O Punho de Brasa encontrou a Ilamia
+      envolta na Neo indomada — e o campo inteiro se dividiu entre luz e escuridão.
+    </p>
+    <div class="balloons">
+      <p class="sfx">DOOON</p>
+      <div class="balloon uriel">
+        <span class="who">uriel</span>
+        Essa espada guarda luto. Dá pra sentir no aço. Quem você perdeu?
+      </div>
+      <div class="balloon nazura">
+        <span class="who">nazura</span>
+        …Não fale da espada. O caminho da vingança não é traçado por covardes — é traçado por quem perdeu algo.
+      </div>
+      <div class="balloon uriel">
+        <span class="who">uriel</span>
+        Então perdemos os dois. Agora entendo por que sua sombra luta chorando.
+      </div>
+      <p class="sfx">ZUKU…</p>
+    </div>
+  </div>
+
+  <!-- ATO 3 -->
+  <div class="ato" id="ato-2">
+    <div class="ato-titulo"><h2>Ato III — O Auge</h2></div>
+    <img class="arte" src="artes/cena-03-auge.png" alt="A fênix de fogo contra a onda de trevas" />
+    <p class="narracao">
+      Uriel liberou tudo o que o braço guardava — a Fênix. E a Neo de Nazura respondeu sozinha,
+      erguendo-se como uma maré de garras que ele ainda não sabe comandar. Por um instante,
+      o céu teve dois donos.
+    </p>
+    <div class="balloons">
+      <p class="sfx">FWOOOOSH</p>
+      <div class="balloon nazura">
+        <span class="who">nazura</span>
+        Essa não sou… eu. Ela está se movendo sozinha—
+      </div>
+      <div class="balloon uriel">
+        <span class="who">uriel</span>
+        Eu sei. O meu fogo também escolhia por mim, no começo. RECUA. Isso não é mais uma luta — é um acidente.
+      </div>
+      <div class="balloon nazura">
+        <span class="who">nazura</span>
+        …A ausência da claridade fortalece meus sentidos. Mas hoje… hoje eu aceito a trégua.
+      </div>
+      <p class="sfx">…shiin</p>
+      <div class="balloon uriel" style="border: 1px solid var(--fire); background: #1a1a1a; color: #ddd;">
+        <span class="who">continua…?</span>
+        Dois poderes que os donos não dominam por completo. Dois lutos. Um pacto improvável começa aqui.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav>
+  <button id="btn-prev" onclick="prev()" disabled>← ANTERIOR</button>
+  <span id="indicator">I / III</span>
+  <button id="btn-next" onclick="next()">PRÓXIMO →</button>
+</nav>
+
+<script>
+  let current = 0;
+  const total = 3;
+  const labels = ['I / III', 'II / III', 'III / III'];
+  function go(n) {
+    document.getElementById('ato-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('ato-' + current).classList.add('active');
+    document.getElementById('indicator').textContent = labels[current];
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === total - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function next() { if (current < total - 1) go(current + 1); }
+  function prev() { if (current > 0) go(current - 1); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') prev();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AETHON — Cap. 01: A Devoradora</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --paper: #f2ece0;
+      --ink: #111;
+      --accent: #8b3a2a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #ddd;
+      font-family: "Georgia", "Times New Roman", serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 1.4rem;
+      letter-spacing: 0.35em;
+      font-weight: 400;
+      color: var(--paper);
+    }
+    header p {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #666;
+      letter-spacing: 0.1em;
+    }
+    .reader {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 6rem;
+    }
+    .page-wrap {
+      display: none;
+      animation: fade 0.35s ease;
+    }
+    .page-wrap.active { display: block; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-num {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #555;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.2em;
+    }
+    .page-img {
+      width: 100%;
+      display: block;
+      border: 1px solid #222;
+      background: #111;
+    }
+    .balloons {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .balloon {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.65rem 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      max-width: 90%;
+      position: relative;
+    }
+    .balloon.left  { align-self: flex-start; border-bottom-left-radius: 2px; }
+    .balloon.right { align-self: flex-end;   border-bottom-right-radius: 2px; }
+    .balloon.thought {
+      border-radius: 50px;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: #333;
+    }
+    .balloon .who {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.2rem;
+    }
+    .sfx {
+      text-align: center;
+      font-size: 1.1rem;
+      letter-spacing: 0.25em;
+      color: #888;
+      margin: 0.5rem 0;
+      font-weight: bold;
+    }
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #111;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem;
+      z-index: 10;
+    }
+    nav button {
+      background: transparent;
+      border: 1px solid #444;
+      color: var(--paper);
+      padding: 0.5rem 1.25rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+    nav button:hover { border-color: var(--paper); }
+    nav button:disabled { opacity: 0.25; cursor: default; }
+    nav span { font-size: 0.8rem; color: #666; min-width: 5rem; text-align: center; }
+    .cover {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .cover h2 {
+      font-size: 2.5rem;
+      letter-spacing: 0.5em;
+      color: var(--paper);
+      margin-bottom: 0.5rem;
+    }
+    .cover h3 {
+      font-size: 0.9rem;
+      color: var(--accent);
+      letter-spacing: 0.3em;
+      margin-bottom: 2rem;
+    }
+    .cover p {
+      color: #666;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      max-width: 400px;
+      margin: 0 auto 2rem;
+    }
+    .cover button {
+      background: var(--paper);
+      color: var(--ink);
+      border: none;
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      letter-spacing: 0.2em;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>裂隙 AETHON</h1>
+  <p>Capítulo 01 — A Devoradora · Setor V</p>
+  <p style="margin-top:0.6rem">
+    <a href="personagens.html" style="color:var(--accent);text-decoration:none;letter-spacing:0.15em;font-size:0.78rem;border:1px solid var(--accent);padding:0.3rem 0.8rem;display:inline-block">PERSONAGENS →</a>
+  </p>
+</header>
+
+<div class="reader">
+
+  <!-- CAPA -->
+  <div class="page-wrap active" id="page-0">
+    <div class="cover">
+      <h2>AETHON</h2>
+      <h3>CAPÍTULO 01 — A DEVORADORA</h3>
+      <p>
+        O Sol não se move.<br>
+        A vida existe apenas na Faixa do Crepúsculo.<br>
+        E a Faixa está encolhendo.
+      </p>
+      <button onclick="go(1)">LER →</button>
+      <p style="margin-top:2rem"><a href="personagens.html" style="color:var(--accent);text-decoration:none;letter-spacing:0.15em;font-size:0.8rem">DOSSIÊ: OS TRÊS MAIS FORTES →</a></p>
+    </div>
+  </div>
+
+  <!-- PÁGINA 1 -->
+  <div class="page-wrap" id="page-1">
+    <div class="page-num">— 01 —</div>
+    <img class="page-img" src="paginas/pagina-01.png" alt="Página 1" />
+    <div class="balloons">
+      <p class="sfx">shiiiiin…</p>
+      <div class="balloon thought left">
+        <span class="who">vesna · pensamento</span>
+        Mais três léguas. Depois descanso.
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2 -->
+  <div class="page-wrap" id="page-2">
+    <div class="page-num">— 02 —</div>
+    <img class="page-img" src="paginas/pagina-02.png" alt="Página 2" />
+    <div class="balloons">
+      <div class="balloon thought left">
+        <span class="who">vesna</span>
+        Resíduo de criança. Loop de sete passos. Repetindo há… quantos ciclos?
+      </div>
+      <p class="sfx">キィィン — KIIIN</p>
+    </div>
+  </div>
+
+  <!-- PÁGINA 3 -->
+  <div class="page-wrap" id="page-3">
+    <div class="page-num">— 03 —</div>
+    <img class="page-img" src="paginas/pagina-03.png" alt="Página 3" />
+    <div class="balloons">
+      <p class="sfx">VUWASHIIIN</p>
+      <div class="balloon right">
+        <span class="who">vesna</span>
+        Você não está aqui. Só a memória de estar.
+      </div>
+      <p class="sfx">ザッ — ZATSU</p>
+    </div>
+  </div>
+
+  <!-- PÁGINA 4 -->
+  <div class="page-wrap" id="page-4">
+    <div class="page-num">— 04 —</div>
+    <img class="page-img" src="paginas/pagina-04.png" alt="Página 4" />
+    <div class="balloons">
+      <div class="balloon left">
+        <span class="who">soldado · concórdia</span>
+        Devoradora. Ordem de captura viva.
+      </div>
+      <div class="balloon right">
+        <span class="who">vesna</span>
+        Então venham me pegar antes que o setor desapareça.
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 5 -->
+  <div class="page-wrap" id="page-5">
+    <div class="page-num">— 05 —</div>
+    <img class="page-img" src="paginas/pagina-05.png" alt="Página 5" />
+    <div class="balloons">
+      <div class="balloon thought left">
+        <span class="who">vesna</span>
+        O Sol… se moveu.
+      </div>
+      <p class="sfx">…shiiin</p>
+      <div class="balloon right" style="border: 1px solid var(--accent);">
+        <span class="who">continua no cap. 02</span>
+        Ela viu o futuro. O futuro a viu de volta.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav>
+  <button id="btn-prev" onclick="prev()" disabled>← ANTERIOR</button>
+  <span id="page-indicator">CAPA</span>
+  <button id="btn-next" onclick="next()">PRÓXIMA →</button>
+  <button onclick="window.location.href='personagens.html'" style="border-color:var(--accent);color:var(--accent)">PERSONAGENS</button>
+</nav>
+
+<script>
+  let current = 0;
+  const total = 5;
+  const labels = ['CAPA', '01 / 05', '02 / 05', '03 / 05', '04 / 05', '05 / 05'];
+
+  function go(n) {
+    document.getElementById('page-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('page-' + current).classList.add('active');
+    document.getElementById('page-indicator').textContent = labels[current];
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === total;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function next() { if (current < total) go(current + 1); }
+  function prev() { if (current > 0) go(current - 1); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') prev();
+  });
+</script>
+</body>
+</html>

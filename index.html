@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNIVERSO — Personagens e Histórias</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --paper: #f2ece0;
+      --ink: #111;
+      --accent: #8b3a2a;
+      --fire: #b5502e;
+      --shadow: #7a7fb0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #ddd;
+      font-family: "Georgia", "Times New Roman", serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.45em;
+      font-weight: 400;
+      color: var(--paper);
+      margin-left: 0.45em;
+    }
+    header p {
+      margin-top: 0.7rem;
+      font-size: 0.85rem;
+      color: #666;
+      letter-spacing: 0.15em;
+    }
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem 4rem;
+    }
+    section h2 {
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      color: #888;
+      text-transform: uppercase;
+      font-weight: 400;
+      border-bottom: 1px solid #222;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    section + section { margin-top: 2.75rem; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+    }
+    a.card {
+      display: block;
+      border: 1px solid #222;
+      padding: 1.4rem 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s;
+    }
+    a.card:hover { border-color: var(--paper); }
+    a.card h3 {
+      font-size: 1.05rem;
+      letter-spacing: 0.15em;
+      color: var(--paper);
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+    a.card .tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+    a.card p {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #999;
+    }
+    .t-mundo   { color: var(--accent); }
+    .t-fogo    { color: var(--fire); }
+    .t-sombra  { color: var(--shadow); }
+    .t-cena    { color: #999; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>UNIVERSO</h1>
+  <p>Personagens, mundos e histórias ilustradas</p>
+</header>
+
+<div class="content">
+
+  <section>
+    <h2>Mundo</h2>
+    <div class="cards">
+      <a class="card" href="aethon/index.html">
+        <h3>AETHON — Capítulo 01</h3>
+        <span class="tag t-mundo">História ilustrada · 5 páginas</span>
+        <p>O Sol não se move. A vida existe apenas na Faixa do Crepúsculo — e a Faixa está encolhendo. Vesna, a Devoradora, atravessa o Setor V.</p>
+      </a>
+      <a class="card" href="aethon/personagens.html">
+        <h3>Dossiê — Os Três Mais Fortes</h3>
+        <span class="tag t-mundo">Vesna · O Vigia do Véu · Solenne</span>
+        <p>Fichas ilustradas dos três limiares mais poderosos da Faixa do Crepúsculo, com marcas, fraquezas e segredos.</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Personagens</h2>
+    <div class="cards">
+      <a class="card" href="uriel/index.html">
+        <h3>URIEL</h3>
+        <span class="tag t-fogo">O Braço de Ferro · Fogo</span>
+        <p>Guerreiro viking de 1,79m com braço mecânico e poder de fogo. Três artes para análise, ficha, história e a invocação da Fênix.</p>
+      </a>
+      <a class="card" href="nazura/index.html">
+        <h3>NAZURA EIDHAME</h3>
+        <span class="tag t-sombra">Domador das Trevas · Neo da Escuridão</span>
+        <p>Líder da Resistência 01. Herdeiro do clã dos Assassinos das Sombras, porta a katana Ilamia de sua falecida mãe. Cap: Raiz da Vingança.</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cenas</h2>
+    <div class="cards">
+      <a class="card" href="cena-uriel-nazura/index.html">
+        <h3>URIEL × NAZURA</h3>
+        <span class="tag t-cena">O Fogo e o Silêncio · 3 atos</span>
+        <p>O encontro, o choque e o auge: a Fênix contra a Neo indomada. Dois lutos, dois poderes sem dono — e uma trégua improvável.</p>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

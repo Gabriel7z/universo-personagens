@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AETHON — Os Três Mais Fortes</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --paper: #f2ece0;
+      --ink: #111;
+      --accent: #8b3a2a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #ddd;
+      font-family: "Georgia", "Times New Roman", serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 1.4rem;
+      letter-spacing: 0.35em;
+      font-weight: 400;
+      color: var(--paper);
+    }
+    header p {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #666;
+      letter-spacing: 0.1em;
+    }
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+    }
+    .reader {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 6rem;
+    }
+    .char { display: none; animation: fade 0.35s ease; }
+    .char.active { display: block; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .char-title {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .char-title h2 {
+      font-size: 1.5rem;
+      letter-spacing: 0.3em;
+      color: var(--paper);
+      font-weight: 400;
+    }
+    .char-title span {
+      display: block;
+      margin-top: 0.3rem;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .char-img {
+      width: 100%;
+      display: block;
+      border: 1px solid #222;
+      background: #111;
+    }
+    .ficha {
+      margin-top: 1.25rem;
+      border: 1px solid #222;
+      padding: 1.25rem;
+    }
+    .ficha dl {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 0.5rem 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .ficha dt {
+      color: var(--accent);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding-top: 0.15rem;
+    }
+    .ficha dd { color: #ccc; }
+    .quote {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--paper);
+      color: var(--ink);
+      font-style: italic;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      border-radius: 12px;
+      border-bottom-left-radius: 2px;
+    }
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #111;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem;
+      z-index: 10;
+    }
+    nav button {
+      background: transparent;
+      border: 1px solid #444;
+      color: var(--paper);
+      padding: 0.5rem 1.25rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+    nav button:hover { border-color: var(--paper); }
+    nav button:disabled { opacity: 0.25; cursor: default; }
+    nav span { font-size: 0.8rem; color: #666; min-width: 5rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>裂隙 AETHON</h1>
+  <p>DOSSIÊ — OS TRÊS MAIS FORTES DA FAIXA</p>
+  <p style="margin-top:0.5rem"><a href="index.html">← voltar ao capítulo 01</a></p>
+</header>
+
+<div class="reader">
+
+  <!-- VESNA -->
+  <div class="char active" id="char-0">
+    <div class="char-title">
+      <h2>VESNA</h2>
+      <span>A Devoradora · Crepuscularia · Renegada</span>
+    </div>
+    <img class="char-img" src="paginas/personagem-vesna.png" alt="Vesna, a Devoradora" />
+    <div class="ficha">
+      <dl>
+        <dt>Força</dt>
+        <dd>Maior potência bruta entre os mortais livres. 14 Resíduos devorados.</dd>
+        <dt>Marca</dt>
+        <dd>Pele dividida ao meio por uma costura no pescoço — lado direito sempre quente, esquerdo sempre frio.</dd>
+        <dt>Arma</dt>
+        <dd>O <em>Medidor</em> — bastão de cartografia que corta gradiente. Sela um vértice por 9 segundos.</dd>
+        <dt>Fraqueza</dt>
+        <dd>Não distingue mais passado de presente. Pode lutar sem saber em qual século está.</dd>
+        <dt>Segredo</dt>
+        <dd>Devorou um Resíduo de si mesma, vindo de um futuro onde a Faixa já colapsou. Viu o Sol se mover.</dd>
+      </dl>
+    </div>
+    <div class="quote">"Você não está aqui. Só a memória de estar."</div>
+  </div>
+
+  <!-- VIGIA DO VÉU -->
+  <div class="char" id="char-1">
+    <div class="char-title">
+      <h2>O VIGIA DO VÉU</h2>
+      <span>Ordem do Véu Perpétuo · Crepuscular de 4ª geração</span>
+    </div>
+    <img class="char-img" src="paginas/personagem-vigia.png" alt="O Vigia do Véu" />
+    <div class="ficha">
+      <dl>
+        <dt>Força</dt>
+        <dd>O pior cenário possível num único instante. Acumula gradiente sem descarregar, como uma represa prestes a romper.</dd>
+        <dt>Marca</dt>
+        <dd>Não conjura há 47 ciclos — de propósito. O ar ao redor dele se curva em direção ao corpo.</dd>
+        <dt>Arma</dt>
+        <dd>Nenhuma. Ele <em>é</em> a arma. Onde ele está, a Ordem não precisa lutar.</dd>
+        <dt>Fraqueza</dt>
+        <dd>Se descarregar, gasta tudo de uma vez. Uma represa só rompe uma vez.</dd>
+        <dt>Segredo</dt>
+        <dd>Ninguém fora da Ordem conhece seu rosto. Nem se ainda existe um rosto sob a máscara.</dd>
+      </dl>
+    </div>
+    <div class="quote">"O silêncio dele pesa mais do que qualquer conjuração já registrada." — Cartógrafos de Ménsura</div>
+  </div>
+
+  <!-- SOLENNE -->
+  <div class="char" id="char-2">
+    <div class="char-title">
+      <h2>SOLENNE DAS TORRES</h2>
+      <span>Concordia Heliárquica · General Heliotrópica</span>
+    </div>
+    <img class="char-img" src="paginas/personagem-solenne.png" alt="Solenne das Torres" />
+    <div class="ficha">
+      <dl>
+        <dt>Força</dt>
+        <dd>Maior alcance geográfico já registrado: derreteu 3 km de gelo nocturno em uma única noite — a Queima do Setor I-Norte.</dd>
+        <dt>Marca</dt>
+        <dd>Metade do corpo virou vidro solar vivo. Ainda se move. Ainda dói.</dd>
+        <dt>Arma</dt>
+        <dd>As torres de amplificação solar do Setor I — e o próprio corpo, que canaliza radiação direta.</dd>
+        <dt>Fraqueza</dt>
+        <dd>Perdeu toda memória anterior ao 12º Gotejamento. Não lembra por que luta — só que deve avançar.</dd>
+        <dt>Segredo</dt>
+        <dd>O lado de vidro registra memórias que não são dela. Às vezes, à noite, ele sussurra.</dd>
+      </dl>
+    </div>
+    <div class="quote">"Vesna destrói quem está na frente. O Vigia destrói quem está por perto. Solenne destrói o mapa."</div>
+  </div>
+
+</div>
+
+<nav>
+  <button id="btn-prev" onclick="prev()" disabled>← ANTERIOR</button>
+  <span id="indicator">1 / 3</span>
+  <button id="btn-next" onclick="next()">PRÓXIMO →</button>
+  <button onclick="window.location.href='index.html'" style="border-color:var(--accent);color:var(--accent)">CAPÍTULO 01</button>
+</nav>
+
+<script>
+  let current = 0;
+  const total = 3;
+  function go(n) {
+    document.getElementById('char-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('char-' + current).classList.add('active');
+    document.getElementById('indicator').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === total - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function next() { if (current < total - 1) go(current + 1); }
+  function prev() { if (current > 0) go(current - 1); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') prev();
+  });
+</script>
+</body>
+</html>

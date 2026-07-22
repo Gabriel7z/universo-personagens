@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NAZURA EIDHAME — Domador das Trevas</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --paper: #f2ece0;
+      --ink: #111;
+      --accent: #4a4e6e;
+      --shadow: #7a7fb0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #ddd;
+      font-family: "Georgia", "Times New Roman", serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.35em;
+      font-weight: 400;
+      color: var(--paper);
+      margin-left: 0.35em;
+    }
+    header .subtitle {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--shadow);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+    .frases {
+      max-width: 640px;
+      margin: 1.5rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .frases p {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: #777;
+      line-height: 1.5;
+    }
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .arte {
+      border: 1px solid #222;
+      background: #111;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .arte:hover { border-color: var(--shadow); }
+    .arte img { width: 100%; display: block; }
+    .arte .label {
+      padding: 0.7rem 0.9rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #888;
+      border-top: 1px solid #222;
+    }
+    .viewer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.94);
+      z-index: 50;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    .viewer.open { display: flex; }
+    .viewer img {
+      max-width: 95vw;
+      max-height: 85vh;
+      border: 1px solid #333;
+    }
+    .viewer .fechar {
+      margin-top: 1rem;
+      background: transparent;
+      border: 1px solid #555;
+      color: var(--paper);
+      padding: 0.5rem 1.5rem;
+      cursor: pointer;
+      letter-spacing: 0.15em;
+      font-size: 0.8rem;
+    }
+    section { margin-top: 2.75rem; }
+    section h2 {
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      color: var(--shadow);
+      text-transform: uppercase;
+      font-weight: 400;
+      border-bottom: 1px solid #222;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .ficha dl {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 0.6rem 1.2rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .ficha dt {
+      color: var(--shadow);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding-top: 0.2rem;
+    }
+    .ficha dd { color: #ccc; }
+    .texto p {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: #bbb;
+      margin-bottom: 1rem;
+    }
+    .texto .fabula {
+      border-left: 2px solid var(--shadow);
+      padding: 0.75rem 1.1rem;
+      font-style: italic;
+      color: #999;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin: 1.25rem 0;
+    }
+    .obs {
+      border: 1px solid #222;
+      padding: 1.1rem 1.25rem;
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: #aaa;
+      font-style: italic;
+    }
+    .obs .autor {
+      display: block;
+      margin-top: 0.5rem;
+      font-style: normal;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: var(--shadow);
+      text-transform: uppercase;
+    }
+    .quote {
+      margin-top: 2.5rem;
+      padding: 1.1rem 1.3rem;
+      background: var(--paper);
+      color: var(--ink);
+      font-style: italic;
+      font-size: 1rem;
+      line-height: 1.6;
+      border-radius: 12px;
+      border-bottom-left-radius: 2px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>NAZURA EIDHAME</h1>
+  <p class="subtitle">Domador das Trevas · Líder da Resistência 01</p>
+  <div class="frases">
+    <p>"Uma guerra tende a existir quando um lado se dispõe a sacrificar sua humanidade."</p>
+    <p>"A ausência da claridade fortalece meus sentidos, me tornando o próprio silêncio."</p>
+    <p>"O caminho da vingança não é traçado por covardes, é traçado por aqueles que perderam algo."</p>
+  </div>
+</header>
+
+<div class="content">
+
+  <!-- GALERIA PARA ANÁLISE -->
+  <section style="margin-top:0">
+    <h2>Artes para Análise — clique para ampliar</h2>
+    <div class="galeria">
+      <div class="arte" onclick="abrir('artes/nazura-corpo-inteiro.png')">
+        <img src="artes/nazura-corpo-inteiro.png" alt="Nazura — corpo inteiro" />
+        <div class="label">01 · Corpo Inteiro — manto, peitoral e a katana Ilamia</div>
+      </div>
+      <div class="arte" onclick="abrir('artes/nazura-rosto.png')">
+        <img src="artes/nazura-rosto.png" alt="Nazura — estudo de rosto" />
+        <div class="label">02 · Rosto — três ângulos e o colar de Kiota</div>
+      </div>
+      <div class="arte" onclick="abrir('artes/nazura-sombras.png')">
+        <img src="artes/nazura-sombras.png" alt="Nazura — em combate com a Neo da escuridão" />
+        <div class="label">03 · Combate — Ilamia e a Neo indomada</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FICHA -->
+  <section class="ficha">
+    <h2>Ficha</h2>
+    <dl>
+      <dt>Nome</dt>
+      <dd>Nazura Eidhame</dd>
+      <dt>Apelido</dt>
+      <dd>Domador das Trevas</dd>
+      <dt>Idade</dt>
+      <dd>18 anos — aniversário em 25/07</dd>
+      <dt>Altura</dt>
+      <dd>1,75m</dd>
+      <dt>Gênero</dt>
+      <dd>Masculino</dd>
+      <dt>Aparência</dt>
+      <dd>Pele morena, olhos castanho claro, cabelo castanho claro</dd>
+      <dt>Natalidade</dt>
+      <dd>Kriston, cidade Klis-Gany do clã Callardian's</dd>
+      <dt>Familiares</dt>
+      <dd>Hirashi (pai, desaparecido) · Hiromi (mãe, falecida)</dd>
+      <dt>Cargo</dt>
+      <dd>Líder da Resistência 01 (Pilar 01)</dd>
+      <dt>Neo</dt>
+      <dd>Controle da Escuridão</dd>
+      <dt>Neotipo</dt>
+      <dd>Perdida (Inicial — fase oculta)</dd>
+      <dt>Fase</dt>
+      <dd>Inicial</dd>
+      <dt>Armamento</dt>
+      <dd>Katana <em>Ilamia</em> — pertencia à sua falecida mãe, Hiromi</dd>
+      <dt>Vestimenta</dt>
+      <dd>Manto, peitoral (armadura), camisa, calça e sapato</dd>
+      <dt>Acessórios</dt>
+      <dd>Colar (presente de Kiota), monóculo (luneta), bússola</dd>
+      <dt>Habilidades</dt>
+      <dd>Especialista em armas e armadilhas, ampla área nas artes marciais, rastreador, caçador, estrategista, leve conhecimento em primeiros socorros</dd>
+    </dl>
+  </section>
+
+  <!-- OBSERVAÇÕES -->
+  <section>
+    <h2>Observações de Campo</h2>
+    <div class="obs">
+      "Suas definições de caráter apontam foco, determinação e seriedade sob pressão, porém em algumas
+      situações suas ações acabam sendo impulsivas pelo grande excesso de confiança em si,
+      deixando-o arrogante em seus atos..."
+      <span class="autor">— Oficial Zael</span>
+    </div>
+  </section>
+
+  <!-- HISTÓRIA -->
+  <section class="texto">
+    <h2>História — Passado</h2>
+    <p>
+      Descendente do clã Eidhame do Reino Bellum — conhecido como o clã dos Assassinos das Sombras —
+      e nascido no clã Kenny de Kriston, Nazura foi registrado como um Kenny ao nascer: seus pais temiam
+      que o antigo clã de Hirashi viesse atrás do menino por causa da Neo da Obscuridade do velho conto
+      <em>"Domador das Trevas, o Bestiário Obscuro"</em>. Do pai, herdou o treinamento no estilo dos
+      assassinos; da mãe, Hiromi Kenny, a educação de um guerreiro honroso e protetor.
+    </p>
+    <p>
+      Aos sete anos, presenciou a guerra entre Kriston e o Reino de Lake Crystal invadir a cidade onde morava.
+      Hirashi o encontrou debaixo da cama, olhando nos olhos da mãe ensanguentada no chão, enquanto o menino
+      recitava um verso da fábula que ela lia todas as noites antes de ele adormecer — <em>"A Luz Entrelaçando os Céus"</em>:
+    </p>
+    <div class="fabula">
+      "As estrelas ocupavam um vasto espaço ao anoitecer, iluminavam o céu quando o sol não brilhava mais,
+      trazia uma claridade distinta da que o sol podia-se revelar ao dia, uma luz de esperança em meio à
+      escuridão que pudesse assim adormecê-lo para um novo amanhã..."
+    </div>
+    <p>
+      Pai e filho escaparam pelas espreitas de Kriston até um refúgio na floresta além das muralhas —
+      <strong>A Resistência</strong> — onde, com o passar dos anos, Nazura encontrou seus melhores amigos:
+      <strong>Kiota</strong> e <strong>Lion</strong>.
+    </p>
+    <p>
+      Aos doze, fugiu do refúgio numa madrugada, querendo vingança pela morte da mãe. Lion o alcançou no
+      amanhecer e, sem conseguir demovê-lo, disse: <em>"Mesmo não conseguindo mudar seu pensamento de que
+      a vingança é um caminho ruim, quero lhe acompanhar durante essa jornada porque... afinal, somos
+      melhores amigos."</em> Infiltrados em Kriston por um buraco na muralha, foram descobertos e encurralados
+      por soldados. Sem domínio sobre a própria Neo, Nazura nada pôde fazer — e Lion recorreu à última opção:
+      transformou-se num híbrido metade homem, metade leão, atraindo todos os inimigos para si para que o
+      amigo escapasse. Nazura chegou à Resistência em prantos.
+    </p>
+    <p>
+      Aos catorze, na festa de comemoração de uma vitória — a noite de sua primeira dança, com Kiota —,
+      os presidiários escaparam das celas que neutralizavam as Neos. Um deles carregava runas tatuadas no
+      corpo, que acionaram uma enorme explosão. A catástrofe matou muitos resistentes. Nazura, inconsciente,
+      foi um dos poucos sobreviventes. O oficial <strong>Zael</strong> e o ultrapassado rei <strong>Rideo</strong>
+      assumiram a liderança, e dos escombros nasceram os <strong>Oito Pilares da Resistência</strong> —
+      refúgios interligados espalhados por diferentes regiões para vigiar Kriston e dificultar o ataque inimigo.
+    </p>
+    <p>
+      Três invernos se passaram desde o incidente que levou muitos à morte — e alguns ao desaparecimento,
+      incluindo <strong>Hirashi</strong> e sua melhor amiga <strong>Kiota</strong>. Aos dezessete, Nazura
+      tornou-se um dos oficiais do Pilar 01, formando novos companheiros durante a jornada na Resistência.
+    </p>
+  </section>
+
+  <!-- PRESENTE -->
+  <section class="texto">
+    <h2>Presente — Cap: Raiz da Vingança</h2>
+    <p>
+      Nazura e Zael se hospedam no <strong>Pilar 04</strong>, a fim de receber informações atualizadas de Kriston...
+    </p>
+  </section>
+
+  <div class="quote">"A ausência da claridade fortalece meus sentidos, me tornando o próprio silêncio."</div>
+
+</div>
+
+<!-- VISUALIZADOR -->
+<div class="viewer" id="viewer" onclick="fechar()">
+  <img id="viewer-img" src="" alt="Arte ampliada" />
+  <button class="fechar" onclick="fechar()">FECHAR ×</button>
+</div>
+
+<script>
+  function abrir(src) {
+    document.getElementById('viewer-img').src = src;
+    document.getElementById('viewer').classList.add('open');
+  }
+  function fechar() {
+    document.getElementById('viewer').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') fechar();
+  });
+</script>
+</body>
+</html>

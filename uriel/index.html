@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URIEL — O Braço de Ferro</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --paper: #f2ece0;
+      --ink: #111;
+      --accent: #8b3a2a;
+      --fire: #b5502e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #ddd;
+      font-family: "Georgia", "Times New Roman", serif;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+      border-bottom: 1px solid #222;
+    }
+    header h1 {
+      font-size: 2.4rem;
+      letter-spacing: 0.5em;
+      font-weight: 400;
+      color: var(--paper);
+      margin-left: 0.5em;
+    }
+    header .subtitle {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--fire);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+    /* Galeria de análise */
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .arte {
+      border: 1px solid #222;
+      background: #111;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .arte:hover { border-color: var(--accent); }
+    .arte img { width: 100%; display: block; }
+    .arte .label {
+      padding: 0.7rem 0.9rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #888;
+      border-top: 1px solid #222;
+    }
+    /* Visualizador ampliado */
+    .viewer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.94);
+      z-index: 50;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    .viewer.open { display: flex; }
+    .viewer img {
+      max-width: 95vw;
+      max-height: 85vh;
+      border: 1px solid #333;
+    }
+    .viewer .fechar {
+      margin-top: 1rem;
+      background: transparent;
+      border: 1px solid #555;
+      color: var(--paper);
+      padding: 0.5rem 1.5rem;
+      cursor: pointer;
+      letter-spacing: 0.15em;
+      font-size: 0.8rem;
+    }
+    section { margin-top: 2.75rem; }
+    section h2 {
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      color: var(--fire);
+      text-transform: uppercase;
+      font-weight: 400;
+      border-bottom: 1px solid #222;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .ficha dl {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 0.6rem 1.2rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .ficha dt {
+      color: var(--accent);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding-top: 0.2rem;
+    }
+    .ficha dd { color: #ccc; }
+    .texto p {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: #bbb;
+      margin-bottom: 1rem;
+    }
+    .poderes { display: grid; gap: 1rem; }
+    @media (min-width: 700px) {
+      .poderes { grid-template-columns: repeat(3, 1fr); }
+    }
+    .poder {
+      border: 1px solid #222;
+      padding: 1.1rem 1.25rem;
+    }
+    .poder h3 {
+      font-size: 0.95rem;
+      color: var(--paper);
+      letter-spacing: 0.12em;
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+    }
+    .poder p {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #999;
+    }
+    .poder .custo {
+      display: block;
+      margin-top: 0.6rem;
+      font-size: 0.72rem;
+      color: var(--fire);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .quote {
+      margin-top: 2.5rem;
+      padding: 1.1rem 1.3rem;
+      background: var(--paper);
+      color: var(--ink);
+      font-style: italic;
+      font-size: 1rem;
+      line-height: 1.6;
+      border-radius: 12px;
+      border-bottom-left-radius: 2px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>URIEL</h1>
+  <p class="subtitle">O Braço de Ferro · Guerreiro do Fogo</p>
+</header>
+
+<div class="content">
+
+  <!-- GALERIA PARA ANÁLISE -->
+  <section style="margin-top:0">
+    <h2>Artes para Análise — clique para ampliar</h2>
+    <div class="galeria">
+      <div class="arte" onclick="abrir('artes/uriel-corpo-inteiro.png')">
+        <img src="artes/uriel-corpo-inteiro.png" alt="Uriel — corpo inteiro" />
+        <div class="label">01 · Corpo Inteiro — silhueta e proporções</div>
+      </div>
+      <div class="arte" onclick="abrir('artes/uriel-braco-mecanico.png')">
+        <img src="artes/uriel-braco-mecanico.png" alt="Uriel — braço mecânico em detalhe" />
+        <div class="label">02 · Braço Mecânico — estudo técnico</div>
+      </div>
+      <div class="arte" onclick="abrir('artes/uriel-fenix.png')">
+        <img src="artes/uriel-fenix.png" alt="Uriel — invocando a fênix de fogo" />
+        <div class="label">03 · A Fênix — invocação máxima</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FICHA -->
+  <section class="ficha">
+    <h2>Ficha</h2>
+    <dl>
+      <dt>Nome</dt>
+      <dd>Uriel</dd>
+      <dt>Título</dt>
+      <dd>O Braço de Ferro</dd>
+      <dt>Altura</dt>
+      <dd>1,79m</dd>
+      <dt>Compleição</dt>
+      <dd>Definida e funcional — músculo de trabalho e combate, sem excesso de massa</dd>
+      <dt>Estilo</dt>
+      <dd>Guerreiro do norte: tranças laterais, barba aparada, pele de lobo no ombro, cinto gravado em runas</dd>
+      <dt>Poder</dt>
+      <dd>Fogo — conjurado pelo punho direito e regulado pelo braço mecânico</dd>
+      <dt>Braço esquerdo</dt>
+      <dd>Prótese mecânica integral: pistões, placas segmentadas e respiradouros de chama</dd>
+    </dl>
+  </section>
+
+  <!-- HISTÓRIA -->
+  <section class="texto">
+    <h2>História</h2>
+    <p>
+      Uriel veio das terras quentes da fronteira, onde o calor mata mais que a guerra.
+      Cresceu entre trabalhadores esquecidos, aprendeu a lutar antes de aprender a ler,
+      e descobriu o próprio fogo no dia em que precisou dele para não morrer.
+    </p>
+    <p>
+      O braço, ele perdeu. Como, ninguém sabe — e ele não conta. As versões variam:
+      um incêndio que ele mesmo causou, um ritual que saiu do controle, uma dívida
+      cobrada por alguém que não aceita moeda. A única certeza é que ele voltou do
+      deserto com a prótese já instalada, feita de um metal que nenhum ferreiro reconhece.
+    </p>
+    <p>
+      Hoje atravessa o mundo como espada de aluguel — mas só aceita contratos que
+      envolvam proteger quem não pode se proteger. Quem tenta contratá-lo para queimar
+      uma vila descobre, rápido, por que o fogo dele nunca precisa de segunda chance.
+    </p>
+  </section>
+
+  <!-- PODERES -->
+  <section>
+    <h2>Poderes</h2>
+    <div class="poderes">
+      <div class="poder">
+        <h3>Punho de Brasa</h3>
+        <p>Concentra calor no punho direito. O impacto funde rocha e verga aço forjado.</p>
+        <span class="custo">Custo: cada golpe rouba calor do próprio corpo</span>
+      </div>
+      <div class="poder">
+        <h3>Respiradouros</h3>
+        <p>O braço mecânico absorve o excesso de calor e o expele pelas fendas — permitindo ataques em sequência que nenhum outro conjurador aguenta.</p>
+        <span class="custo">Custo: após três descargas, o braço precisa resfriar</span>
+      </div>
+      <div class="poder">
+        <h3>Chama Concordante</h3>
+        <p>O fogo de Uriel não explode — acompanha. Cercos, correntes de calor, muralhas de chama que não tocam aliados.</p>
+        <span class="custo">Custo: se a concentração quebra, o fogo escolhe sozinho</span>
+      </div>
+      <div class="poder">
+        <h3>A Fênix</h3>
+        <p>Invocação máxima: todo o calor acumulado no braço mecânico é liberado de uma vez, tomando a forma de uma ave de fogo colossal que obedece a um único comando antes de se dissipar.</p>
+        <span class="custo">Custo: esgota o braço por completo — depois dela, Uriel luta apenas com o corpo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEGREDO -->
+  <section class="texto">
+    <h2>O Segredo</h2>
+    <p>
+      O metal do braço não enferruja, não congela e não responde a nenhuma magia conhecida.
+      Nas noites mais frias, os dedos mecânicos se movem sozinhos — devagar, como se
+      escrevessem algo numa língua que Uriel não lê. Ele começou a copiar os movimentos.
+      E está procurando alguém que saiba o que significam.
+    </p>
+  </section>
+
+  <div class="quote">"O fogo não me obedece. Ele só concorda comigo."</div>
+
+</div>
+
+<!-- VISUALIZADOR -->
+<div class="viewer" id="viewer" onclick="fechar()">
+  <img id="viewer-img" src="" alt="Arte ampliada" />
+  <button class="fechar" onclick="fechar()">FECHAR ×</button>
+</div>
+
+<script>
+  function abrir(src) {
+    document.getElementById('viewer-img').src = src;
+    document.getElementById('viewer').classList.add('open');
+  }
+  function fechar() {
+    document.getElementById('viewer').classList.remove('open');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') fechar();
+  });
+</script>
+</body>
+</html>
