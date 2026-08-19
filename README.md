@@ -6,13 +6,20 @@ Projeto de worldbuilding e personagens originais em estilo mangá (preto e branc
 
 Abra o `index.html` da raiz no navegador — é um **portfólio interativo** com animações, partículas e navegação suave que leva para todas as seções. Cada seção também funciona sozinha.
 
-## Site online (GitHub Pages)
+## Site online
+
+**Ver agora:** https://streamy-ion-9unjb42.shipstatic.com
+
+**Manter permanentemente (grátis):** abra este link e crie conta para ficar com o site para sempre:  
+https://my.shipstatic.com/claim/16495d456c4b9aa63513b230373df81b
+
+> O link acima expira em 3 dias se não for reivindicado. Use o link de claim para guardá-lo permanentemente.
+
+### GitHub Pages (alternativa permanente no seu GitHub)
 
 **URL:** https://gabriel7z.github.io/universo-personagens/
 
-> Se o link ainda não abrir, ative o GitHub Pages em  
-> [Settings → Pages](https://github.com/Gabriel7z/universo-personagens/settings/pages)  
-> e escolha **Source: GitHub Actions**. Depois, rode o workflow **Deploy GitHub Pages** em Actions.
+Ative em [Settings → Pages](https://github.com/Gabriel7z/universo-personagens/settings/pages) → **Deploy from a branch** → `main` → `/ (root)`.
 
 ### Portfólio interativo
 
