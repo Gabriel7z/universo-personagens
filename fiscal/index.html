@@ -23,13 +23,27 @@
       <div class="hero-tags">
         <span>Planejamento legal</span>
         <span>Comparativo de regimes</span>
-        <span>Checklist de obrigações</span>
+        <span>Alertas de vencimento</span>
+        <span>Exportar PDF</span>
       </div>
+    </section>
+
+    <!-- Empresas -->
+    <section class="card companies-panel">
+      <div class="panel-head">
+        <h3>Minhas empresas</h3>
+        <button type="button" id="btnNovaEmpresa" class="btn-secondary">+ Nova empresa</button>
+      </div>
+      <div id="listaEmpresas" class="company-list"></div>
     </section>
 
     <section class="layout">
       <form id="simulador" class="card form-panel">
         <h3>Diagnóstico rápido</h3>
+
+        <label>Nome da empresa
+          <input id="nomeEmpresa" type="text" placeholder="Ex.: Loja Silva LTDA" required />
+        </label>
 
         <label>Porte atual
           <select id="porte" required>
@@ -59,12 +73,18 @@
           </select>
         </label>
 
-        <button type="submit" class="btn-primary">Simular estratégia</button>
+        <div class="btn-row">
+          <button type="submit" class="btn-primary">Simular estratégia</button>
+          <button type="button" id="btnSalvarEmpresa" class="btn-secondary">Salvar empresa</button>
+        </div>
         <p class="notice">* Simulação educacional. Decisão final deve ser validada com contador.</p>
       </form>
 
       <section class="card result-panel">
-        <h3>Resultado da simulação</h3>
+        <div class="panel-head">
+          <h3>Resultado da simulação</h3>
+          <button type="button" id="btnExportarPdf" class="btn-secondary" disabled>Exportar PDF</button>
+        </div>
         <div id="resumo" class="summary empty">Preencha o formulário para calcular.</div>
 
         <div class="table-wrap">
@@ -80,6 +100,15 @@
           </table>
         </div>
       </section>
+    </section>
+
+    <!-- Alertas -->
+    <section class="card alerts-panel">
+      <div class="panel-head">
+        <h3>Alertas de vencimento</h3>
+        <span id="alertasResumo" class="badge">0 pendentes</span>
+      </div>
+      <div id="listaAlertas" class="alerts-list"></div>
     </section>
 
     <section class="card actions-panel">
