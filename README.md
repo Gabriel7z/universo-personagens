@@ -8,10 +8,12 @@ Abra o `index.html` da raiz no navegador — é um **portfólio interativo** com
 
 ## Site online
 
-**Ver agora:** https://streamy-ion-9unjb42.shipstatic.com
+**Ver agora:** https://coherent-glow-nu8t84q.shipstatic.com
+
+**Radar Tributário (fiscal):** https://coherent-glow-nu8t84q.shipstatic.com/fiscal/index.html
 
 **Manter permanentemente (grátis):** abra este link e crie conta para ficar com o site para sempre:  
-https://my.shipstatic.com/claim/16495d456c4b9aa63513b230373df81b
+https://my.shipstatic.com/claim/a7bfa3ad95248258a6289177130fe930
 
 > O link acima expira em 3 dias se não for reivindicado. Use o link de claim para guardá-lo permanentemente.
 
