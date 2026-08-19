@@ -1,75 +1,140 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "radarTributarioEmpresas";
-  var HISTORY_KEY = "radarTributarioHistorico";
-  var CHECKLIST_KEY = "radarTributarioChecklist";
+  var STORAGE_KEY = "radarReciclagemOperacoes";
+  var HISTORY_KEY = "radarReciclagemHistorico";
+  var CHECKLIST_KEY = "radarReciclagemChecklist";
+  var PRICES_KEY = "radarReciclagemPrecos";
+  var LOTES_KEY = "radarReciclagemLotes";
 
   var LIMIT_MEI = 81000;
   var LIMIT_SIMPLES = 4800000;
   var MEI_TAX = 0.06;
 
-  var CHECKLIST_ITEMS = [
-    { id: "nf", label: "Emitir notas fiscais do mês" },
-    { id: "das", label: "Conferir guia DAS / impostos federais" },
-    { id: "fgts", label: "Recolher FGTS e encargos trabalhistas" },
-    { id: "iss", label: "Apurar ISS municipal" },
-    { id: "caixa", label: "Separar reserva tributária no caixa" },
-    { id: "dre", label: "Atualizar DRE e fluxo de caixa" },
-    { id: "contador", label: "Enviar documentos ao contador" }
+  var MATERIAIS = [
+    { id: "papelao", nome: "Papelão", icon: "📦", precoRef: 0.45, precoCompra: 0.30 },
+    { id: "papel", nome: "Papel branco", icon: "📄", precoRef: 0.55, precoCompra: 0.35 },
+    { id: "pet", nome: "PET", icon: "🧴", precoRef: 1.20, precoCompra: 0.85 },
+    { id: "pead", nome: "PEAD", icon: "🪣", precoRef: 1.80, precoCompra: 1.20 },
+    { id: "pvc", nome: "PVC", icon: "🔧", precoRef: 1.00, precoCompra: 0.65 },
+    { id: "aluminio", nome: "Alumínio", icon: "🥫", precoRef: 6.50, precoCompra: 4.80 },
+    { id: "ferro", nome: "Ferro / Aço", icon: "🔩", precoRef: 0.45, precoCompra: 0.28 },
+    { id: "cobre", nome: "Cobre", icon: "🔌", precoRef: 28.00, precoCompra: 22.00 },
+    { id: "vidro", nome: "Vidro", icon: "🫙", precoRef: 0.08, precoCompra: 0.04 },
+    { id: "eletronicos", nome: "Eletrônicos", icon: "💻", precoRef: 2.50, precoCompra: 1.50 }
   ];
 
-  var MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-
-  var form = document.getElementById("simulador");
-  var tabela = document.getElementById("tabelaRegimes");
-  var resumo = document.getElementById("resumo");
-  var planoAcao = document.getElementById("planoAcao");
-  var listaEmpresas = document.getElementById("listaEmpresas");
-  var listaAlertas = document.getElementById("listaAlertas");
-  var alertasResumo = document.getElementById("alertasResumo");
-  var btnExportarPdf = document.getElementById("btnExportarPdf");
-  var btnWhatsApp = document.getElementById("btnWhatsApp");
-  var btnSalvarEmpresa = document.getElementById("btnSalvarEmpresa");
-  var btnNovaEmpresa = document.getElementById("btnNovaEmpresa");
-  var btnLimparHistorico = document.getElementById("btnLimparHistorico");
-  var kpiGrid = document.getElementById("kpiGrid");
-  var chartArea = document.getElementById("chartArea");
-  var tableWrap = document.getElementById("tableWrap");
-  var resultSubtitle = document.getElementById("resultSubtitle");
-  var porteSelect = document.getElementById("porte");
-  var portePills = document.getElementById("portePills");
-  var toast = document.getElementById("toast");
-  var menuBtn = document.getElementById("menuBtn");
-  var sidebar = document.getElementById("sidebar");
-  var crescimentoSlider = document.getElementById("crescimentoSlider");
-  var crescimentoValue = document.getElementById("crescimentoValue");
-  var cenarioResult = document.getElementById("cenarioResult");
-
-  var REGIME_LABELS = {
-    mei: "MEI",
-    simples: "Simples Nacional",
-    presumido: "Lucro Presumido",
-    real: "Lucro Real"
+  var SEGMENTOS = {
+    catador: { label: "Catador / Autônomo", porte: "pequeno", cnae: "3811-4/00", dica: "MEI ou Simples — emita recibo/nota na venda" },
+    cooperativa: { label: "Cooperativa", porte: "pequeno", cnae: "3811-4/00", dica: "Rateio entre associados + DAS mensal" },
+    galpao: { label: "Galpão / Triagem", porte: "medio", cnae: "3832-7/00", dica: "Compra em volume, separa e revende beneficiado" },
+    beneficiador: { label: "Beneficiador", porte: "medio", cnae: "3832-7/00", dica: "Fardos padronizados para indústria" },
+    industria: { label: "Indústria recicladora", porte: "grande", cnae: "3839-4/01", dica: "Contratos B2B, ICMS e logística reversa" }
   };
+
+  var COMPLIANCE = {
+    catador: [
+      { req: "Cadastro MEI ou CNPJ", nivel: "obrigatorio", desc: "Formalize para vender com nota/recibo" },
+      { req: "Nota fiscal ou recibo na venda", nivel: "obrigatorio", desc: "Comprador pode exigir documento" },
+      { req: "MTR", nivel: "recomendado", desc: "Manifesto de Transporte quando transportar resíduos" },
+      { req: "Licença ambiental", nivel: "condicional", desc: "Galpão fixo pode exigir alvará municipal" }
+    ],
+    cooperativa: [
+      { req: "CNPJ e estatuto social", nivel: "obrigatorio", desc: "Cooperativa registrada na OCB" },
+      { req: "Cadastro de associados", nivel: "obrigatorio", desc: "Controle de rateio e produção" },
+      { req: "Licença ambiental (LP/LA)", nivel: "obrigatorio", desc: "Galpão de triagem e armazenamento" },
+      { req: "MTR em transportes", nivel: "obrigatorio", desc: "Sistema estadual (FEPAM, CETESB, etc.)" },
+      { req: "PGRS / plano de resíduos", nivel: "recomendado", desc: "Exigido por municípios e grandes geradores" }
+    ],
+    galpao: [
+      { req: "Licença ambiental", nivel: "obrigatorio", desc: "Operação de resíduos sólidos" },
+      { req: "MTR — Manifesto de Transporte", nivel: "obrigatorio", desc: "Toda carga entrada/saída" },
+      { req: "Cadastro no órgão estadual", nivel: "obrigatorio", desc: "Inventário de resíduos" },
+      { req: "Alvará de funcionamento", nivel: "obrigatorio", desc: "Prefeitura + bombeiros" },
+      { req: "Controle de balança / pesagem", nivel: "obrigatorio", desc: "Rastreabilidade comercial" }
+    ],
+    beneficiador: [
+      { req: "Licença de operação (LO)", nivel: "obrigatorio", desc: "Processamento e beneficiamento" },
+      { req: "MTR e rastreabilidade", nivel: "obrigatorio", desc: "Origem e destino documentados" },
+      { req: "Certificação de qualidade", nivel: "recomendado", desc: "Umidade, impureza, tipo de fardo" },
+      { req: "Contratos B2B", nivel: "recomendado", desc: "Indústria exige padrão e volume" }
+    ],
+    industria: [
+      { req: "Licenciamento ambiental completo", nivel: "obrigatorio", desc: "LP, LI e LO conforme porte" },
+      { req: "Logística reversa / PNRS", nivel: "obrigatorio", desc: "Acordos setoriais quando aplicável" },
+      { req: "Controle de ICMS interestadual", nivel: "obrigatorio", desc: "Operações entre estados" },
+      { req: "Rastreabilidade ESG", nivel: "recomendado", desc: "Relatórios para clientes e investidores" }
+    ]
+  };
+
+  var MERCADO = {
+    catador: [
+      { canal: "Galpão local", desc: "Venda rápida, preço médio, exige pesagem", icon: "🏭" },
+      { canal: "Atravessador", desc: "Compra na rua, menor burocracia", icon: "🚛" },
+      { canal: "Cooperativa", desc: "Melhor preço se associado", icon: "🤝" },
+      { canal: "Feira de recicláveis", desc: "Eventos municipais e campanhas", icon: "📅" }
+    ],
+    cooperativa: [
+      { canal: "Indústria recicladora", desc: "Contrato em volume, exige qualidade", icon: "🏢" },
+      { canal: "Beneficiador regional", desc: "Intermediário que padroniza fardos", icon: "⚙" },
+      { canal: "Exportador / trading", desc: "PET e papel em container", icon: "🚢" },
+      { canal: "Prefeitura / licitação", desc: "Coleta seletiva terceirizada", icon: "🏛" }
+    ],
+    galpao: [
+      { canal: "Indústria (B2B)", desc: "Fardos separados por tipo", icon: "🏢" },
+      { canal: "Beneficiador", desc: "Material semi-processado", icon: "⚙" },
+      { canal: "Outro galpão / rede", desc: "Redistribuição regional", icon: "🔗" },
+      { canal: "Marketplace sucata", desc: "Plataformas digitais de recicláveis", icon: "💻" }
+    ],
+    beneficiador: [
+      { canal: "Indústria transformadora", desc: "Contrato longo prazo", icon: "🏭" },
+      { canal: "Exportação", desc: "Commodities (PET flake, papel)", icon: "🌎" },
+      { canal: "Trading internacional", desc: "Preço indexado em dólar", icon: "💱" }
+    ],
+    industria: [
+      { canal: "Fabricantes finais", desc: "Matéria-prima secundária certificada", icon: "📦" },
+      { canal: "Grandes marcas (log. reversa)", desc: "Acordos PNRS setoriais", icon: "♻" },
+      { canal: "Governo / licitações", desc: "Embalagens recicladas em compras públicas", icon: "🏛" }
+    ]
+  };
+
+  var CHECKLIST_BASE = [
+    { id: "pesagem", label: "Registrar pesagem de entrada e saída" },
+    { id: "nf", label: "Emitir NF-e ou recibo de venda" },
+    { id: "mtr", label: "Gerar MTR para transportes (se aplicável)" },
+    { id: "das", label: "Pagar DAS / guias fiscais" },
+    { id: "qualidade", label: "Separar materiais por tipo e umidade" },
+    { id: "estoque", label: "Atualizar estoque de fardos/lotes" },
+    { id: "cotacao", label: "Consultar cotação antes de vender" },
+    { id: "contador", label: "Enviar movimento ao contador" }
+  ];
 
   var OBRIGACOES = [
     { id: "das", nome: "DAS", desc: "Simples Nacional", dia: 20, tipo: "Federal", icon: "📋" },
     { id: "fgts", nome: "FGTS", desc: "Recolhimento mensal", dia: 7, tipo: "Trabalhista", icon: "👥" },
-    { id: "iss", nome: "ISS", desc: "Imposto municipal", dia: 10, tipo: "Municipal", icon: "🏛" },
-    { id: "irpj", nome: "IRPJ", desc: "Trimestral", dia: 30, tipo: "Federal", meses: [3, 6, 9, 12], icon: "📊" },
+    { id: "mtr", nome: "MTR", desc: "Manifesto resíduos", dia: 15, tipo: "Ambiental", icon: "♻" },
     { id: "defis", nome: "DEFIS", desc: "Declaração anual", dia: 31, tipo: "Federal", meses: [3], icon: "📁" }
   ];
 
-  var lastResult = null;
-  var activeCompanyId = null;
+  var REGIME_LABELS = { mei: "MEI", simples: "Simples Nacional", presumido: "Lucro Presumido", real: "Lucro Real" };
 
-  function brl(value) {
-    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  var form, tabela, resumo, planoAcao, listaEmpresas, listaAlertas, alertasResumo;
+  var btnExportarPdf, btnWhatsApp, btnSalvarEmpresa, btnNovaEmpresa, btnAddLote, btnAplicarVendas, btnResetPrecos;
+  var kpiGrid, chartArea, tableWrap, resultSubtitle, segmentSelect, segmentPills, toast, menuBtn, sidebar;
+  var lastResult = null, activeCompanyId = null, currentSegment = "catador", precos = {}, lotes = [];
+
+  function $(id) { return document.getElementById(id); }
+
+  function brl(v) {
+    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: v < 10 ? 2 : 0 });
   }
 
-  function pct(value) {
-    return value.toFixed(1) + "%";
+  function brlKg(v) {
+    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "/kg";
+  }
+
+  function kg(v) {
+    return v.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + " kg";
   }
 
   function showToast(msg, type) {
@@ -80,62 +145,73 @@
     showToast._t = setTimeout(function () { toast.classList.add("hidden"); }, 3200);
   }
 
-  function loadCompanies() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-    catch (e) { return []; }
+  function loadJSON(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+    catch (e) { return fallback; }
   }
 
-  function saveCompanies(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  function saveJSON(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+  function loadCompanies() { return loadJSON(STORAGE_KEY, []); }
+  function saveCompanies(list) { saveJSON(STORAGE_KEY, list); }
+  function uid() { return "op_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  function initPrecos() {
+    var saved = loadJSON(PRICES_KEY, null);
+    if (saved) { precos = saved; return; }
+    MATERIAIS.forEach(function (m) {
+      precos[m.id] = { venda: m.precoRef, compra: m.precoCompra };
+    });
+    saveJSON(PRICES_KEY, precos);
   }
 
-  function loadHistory() {
-    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }
-    catch (e) { return []; }
+  function loadLotes() {
+    lotes = loadJSON(LOTES_KEY, [{ material: "pet", peso: 500, precoVenda: null, precoCompra: null }]);
   }
 
-  function saveHistory(list) {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 20)));
-  }
-
-  function loadChecklistState() {
-    try { return JSON.parse(localStorage.getItem(CHECKLIST_KEY) || "{}"); }
-    catch (e) { return {}; }
-  }
-
-  function saveChecklistState(state) {
-    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
-  }
-
-  function uid() {
-    return "emp_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  }
+  function saveLotes() { saveJSON(LOTES_KEY, lotes); saveJSON(PRICES_KEY, precos); }
 
   function getFormData() {
     return {
-      nome: document.getElementById("nomeEmpresa").value.trim(),
-      porte: porteSelect.value,
-      faturamento: Number(document.getElementById("faturamento").value || 0),
-      folha: Number(document.getElementById("folha").value || 0),
-      custos: Number(document.getElementById("custos").value || 0),
-      setor: document.getElementById("setor").value
+      nome: $("nomeEmpresa").value.trim(),
+      segmento: segmentSelect.value,
+      faturamento: Number($("faturamento").value || 0),
+      folha: Number($("folha").value || 0),
+      custos: Number($("custos").value || 0),
+      tipoOperacao: $("tipoOperacao").value,
+      volumeAnual: Number($("volumeAnual").value || 0)
     };
   }
 
   function setFormData(data) {
-    document.getElementById("nomeEmpresa").value = data.nome || "";
-    setPorte(data.porte || "pequeno");
-    document.getElementById("faturamento").value = data.faturamento || "";
-    document.getElementById("folha").value = data.folha || "";
-    document.getElementById("custos").value = data.custos || "";
-    document.getElementById("setor").value = data.setor || "servicos";
+    $("nomeEmpresa").value = data.nome || "";
+    setSegment(data.segmento || "catador");
+    $("faturamento").value = data.faturamento || "";
+    $("folha").value = data.folha || "";
+    $("custos").value = data.custos || "";
+    $("tipoOperacao").value = data.tipoOperacao || "comercio";
+    $("volumeAnual").value = data.volumeAnual || "";
   }
 
-  function setPorte(porte) {
-    porteSelect.value = porte;
-    portePills.querySelectorAll(".pill").forEach(function (p) {
-      p.classList.toggle("active", p.dataset.porte === porte);
+  function setSegment(seg) {
+    currentSegment = seg;
+    segmentSelect.value = seg;
+    segmentPills.querySelectorAll(".pill").forEach(function (p) {
+      p.classList.toggle("active", p.dataset.segment === seg);
     });
+    document.querySelectorAll(".segment-card").forEach(function (c) {
+      c.classList.toggle("active", c.dataset.segment === seg);
+    });
+    renderCompliance(seg);
+    renderMercado(seg);
+    renderChecklist();
+    renderAlerts(SEGMENTOS[seg].porte, 0);
+  }
+
+  function mapOperacaoToSetor(tipo) {
+    if (tipo === "industria") return "industria";
+    if (tipo === "beneficiamento") return "servicos";
+    return "comercio";
   }
 
   function rateByRegime(regime, setor, faturamento, folhaRatio) {
@@ -147,373 +223,236 @@
     var rate = base[regime][setor];
     if (regime === "simples" && folhaRatio > 0.28) rate -= 0.012;
     if (regime === "presumido" && faturamento > 4800000) rate += 0.01;
-    if (regime === "real" && folhaRatio > 0.35) rate -= 0.008;
     return Math.max(0.04, rate);
-  }
-
-  function simulateMEI(faturamento) {
-    return {
-      regime: "mei",
-      aliquota: MEI_TAX,
-      imposto: faturamento * MEI_TAX
-    };
   }
 
   function simulate(data) {
     if (data.faturamento <= 0) return null;
+    var setor = mapOperacaoToSetor(data.tipoOperacao);
     var folhaRatio = data.folha / data.faturamento;
     var regimes = ["simples", "presumido", "real"].map(function (regime) {
-      var aliquota = rateByRegime(regime, data.setor, data.faturamento, folhaRatio);
+      var aliquota = rateByRegime(regime, setor, data.faturamento, folhaRatio);
       return { regime: regime, aliquota: aliquota, imposto: data.faturamento * aliquota };
     });
     regimes.sort(function (a, b) { return a.imposto - b.imposto; });
     var best = regimes[0];
     var second = regimes[1];
+
+    var receitaMensal = data.faturamento / 12;
+    var impostoMensal = best.imposto / 12;
+    var margemOp = data.faturamento - data.custos - best.imposto;
+    var margemPct = (margemOp / data.faturamento) * 100;
+
     return {
       input: data,
       regimes: regimes,
       best: best,
       economiaAno: Math.max(0, second.imposto - best.imposto),
-      margemLiquida: ((data.faturamento - data.custos - best.imposto) / data.faturamento) * 100,
-      reservaMensal: best.imposto / 12
+      margemLiquida: margemPct,
+      reservaMensal: impostoMensal,
+      receitaMensal: receitaMensal,
+      margemOperacional: margemOp
     };
   }
 
-  function simulateWithGrowth(data, growthPct) {
-    var factor = 1 + growthPct / 100;
-    var adjusted = Object.assign({}, data, { faturamento: data.faturamento * factor });
-    return simulate(adjusted);
-  }
-
-  function limitStatus(ratio) {
-    if (ratio >= 95) return { cls: "danger", label: "Crítico" };
-    if (ratio >= 80) return { cls: "warn", label: "Atenção" };
-    return { cls: "ok", label: "Seguro" };
-  }
-
-  function renderLimits(result) {
-    var fat = result ? result.input.faturamento : 0;
-    var meiPct = Math.min(100, (fat / LIMIT_MEI) * 100);
-    var simplesPct = Math.min(100, (fat / LIMIT_SIMPLES) * 100);
-    var meiSt = limitStatus(meiPct);
-    var simplesSt = limitStatus(simplesPct);
-
-    document.getElementById("limitMeiBar").style.width = meiPct + "%";
-    document.getElementById("limitMeiBar").className = "limit-bar " + meiSt.cls;
-    document.getElementById("limitMeiMeta").textContent = fat
-      ? brl(fat) + " (" + pct(meiPct) + " do teto) — " + (fat > LIMIT_MEI ? "Acima do MEI" : "Dentro do MEI")
-      : "Informe o faturamento na simulação";
-
-    document.getElementById("limitSimplesBar").style.width = simplesPct + "%";
-    document.getElementById("limitSimplesBar").className = "limit-bar blue " + simplesSt.cls;
-    document.getElementById("limitSimplesMeta").textContent = fat
-      ? brl(fat) + " (" + pct(simplesPct) + " do teto) — " + (fat > LIMIT_SIMPLES ? "Fora do Simples" : "Elegível ao Simples")
-      : "Informe o faturamento na simulação";
-
-    var worst = meiPct > simplesPct ? meiSt : simplesSt;
-    var statusEl = document.getElementById("limitesStatus");
-    statusEl.textContent = fat ? worst.label : "Simule para ver";
-    statusEl.className = "status-pill " + (fat ? worst.cls : "ok");
-
-    renderMEICompare(result);
-  }
-
-  function renderMEICompare(result) {
-    var wrap = document.getElementById("meiCompare");
-    var cards = document.getElementById("meiCompareCards");
-    if (!result || result.input.porte !== "pequeno" || result.input.faturamento > LIMIT_MEI) {
-      wrap.classList.add("hidden");
-      return;
-    }
-    var fat = result.input.faturamento;
-    var mei = simulateMEI(fat);
-    var simples = result.regimes.find(function (r) { return r.regime === "simples"; });
-    var diff = simples.imposto - mei.imposto;
-    var recomendado = diff > 0 ? "mei" : "simples";
-
-    wrap.classList.remove("hidden");
-    cards.innerHTML =
-      "<article class='compare-card" + (recomendado === "mei" ? " best" : "") + "'>" +
-        "<span class='compare-tag'>MEI</span>" +
-        "<strong>" + brl(mei.imposto) + "/ano</strong>" +
-        "<span>Alíquota ~6% · teto R$ 81k</span>" +
-      "</article>" +
-      "<article class='compare-card" + (recomendado === "simples" ? " best" : "") + "'>" +
-        "<span class='compare-tag'>Simples</span>" +
-        "<strong>" + brl(simples.imposto) + "/ano</strong>" +
-        "<span>Alíquota " + (simples.aliquota * 100).toFixed(1) + "%</span>" +
-      "</article>" +
-      "<article class='compare-card diff'>" +
-        "<span class='compare-tag'>Diferença</span>" +
-        "<strong>" + brl(Math.abs(diff)) + "/ano</strong>" +
-        "<span>" + (diff > 0 ? "MEI mais barato neste cenário" : "Simples mais vantajoso") + "</span>" +
+  function renderMateriais() {
+    $("materiaisGrid").innerHTML = MATERIAIS.map(function (m) {
+      var p = precos[m.id] || { venda: m.precoRef, compra: m.precoCompra };
+      return "<article class='material-card'>" +
+        "<div class='material-head'><span class='material-icon'>" + m.icon + "</span><strong>" + m.nome + "</strong></div>" +
+        "<div class='material-prices'>" +
+          "<label>Compra<input type='number' step='0.01' min='0' data-mat='" + m.id + "' data-tipo='compra' value='" + p.compra + "' /></label>" +
+          "<label>Venda<input type='number' step='0.01' min='0' data-mat='" + m.id + "' data-tipo='venda' value='" + p.venda + "' /></label>" +
+        "</div>" +
+        "<span class='material-spread'>Spread: " + brlKg(p.venda - p.compra) + "</span>" +
       "</article>";
-  }
-
-  function renderProjection(result) {
-    var empty = document.getElementById("projecaoEmpty");
-    var chart = document.getElementById("projecaoChart");
-    var tableWrapEl = document.getElementById("projecaoTableWrap");
-    var tableBody = document.getElementById("projecaoTable");
-
-    if (!result) {
-      empty.classList.remove("hidden");
-      chart.classList.add("hidden");
-      tableWrapEl.classList.add("hidden");
-      return;
-    }
-
-    empty.classList.add("hidden");
-    chart.classList.remove("hidden");
-    tableWrapEl.classList.remove("hidden");
-
-    var mensal = result.reservaMensal;
-    var max = mensal;
-    var acum = 0;
-    var now = new Date();
-    var startMonth = now.getMonth();
-
-    chart.innerHTML = MESES.map(function (nome, i) {
-      var idx = (startMonth + i) % 12;
-      var h = Math.max(8, Math.round((mensal / max) * 100));
-      return "<div class='proj-col'>" +
-        "<div class='proj-bar' style='height:" + h + "%' title='" + brl(mensal) + "'></div>" +
-        "<span>" + MESES[idx] + "</span>" +
-      "</div>";
     }).join("");
 
-    tableBody.innerHTML = MESES.map(function (nome, i) {
-      acum += mensal;
-      var idx = (startMonth + i) % 12;
-      return "<tr><td>" + MESES[idx] + "/" + now.getFullYear() + "</td><td>" + brl(mensal) + "</td><td>" + brl(acum) + "</td></tr>";
-    }).join("");
-  }
-
-  function renderScenario(result) {
-    if (!result) {
-      cenarioResult.innerHTML = "<p class='cenario-hint'>Ajuste o slider após simular para ver cenários alternativos.</p>";
-      return;
-    }
-    var growth = Number(crescimentoSlider.value);
-    crescimentoValue.textContent = (growth > 0 ? "+" : "") + growth + "%";
-    var projected = simulateWithGrowth(result.input, growth);
-    if (!projected) return;
-
-    var newFat = result.input.faturamento * (1 + growth / 100);
-    var diffImposto = projected.best.imposto - result.best.imposto;
-    var regimeChanged = projected.best.regime !== result.best.regime;
-
-    cenarioResult.innerHTML =
-      "<div class='cenario-cards'>" +
-        "<article class='cenario-card'>" +
-          "<span>Faturamento projetado</span><strong>" + brl(newFat) + "/ano</strong>" +
-        "</article>" +
-        "<article class='cenario-card'>" +
-          "<span>Regime projetado</span><strong>" + REGIME_LABELS[projected.best.regime] + "</strong>" +
-          (regimeChanged ? "<em class='cenario-change'>Mudança de regime</em>" : "") +
-        "</article>" +
-        "<article class='cenario-card accent'>" +
-          "<span>Imposto projetado</span><strong>" + brl(projected.best.imposto) + "/ano</strong>" +
-          "<em>" + (diffImposto >= 0 ? "+" : "") + brl(diffImposto) + " vs. atual</em>" +
-        "</article>" +
-        "<article class='cenario-card'>" +
-          "<span>Reserva mensal</span><strong>" + brl(projected.reservaMensal) + "</strong>" +
-        "</article>" +
-      "</div>";
-  }
-
-  function renderChecklist() {
-    var state = loadChecklistState();
-    var monthKey = new Date().getFullYear() + "-" + (new Date().getMonth() + 1);
-    var monthState = state[monthKey] || {};
-    var list = document.getElementById("checklistItems");
-    var done = 0;
-
-    list.innerHTML = CHECKLIST_ITEMS.map(function (item) {
-      var checked = !!monthState[item.id];
-      if (checked) done++;
-      return "<li class='check-item" + (checked ? " done" : "") + "'>" +
-        "<label><input type='checkbox' data-id='" + item.id + "' " + (checked ? "checked" : "") + " />" +
-        "<span>" + item.label + "</span></label></li>";
-    }).join("");
-
-    document.getElementById("checklistProgress").textContent = done + "/" + CHECKLIST_ITEMS.length;
-    document.getElementById("checklistProgress").className = "status-pill " + (done === CHECKLIST_ITEMS.length ? "ok" : "warn");
-
-    list.querySelectorAll("input[type=checkbox]").forEach(function (cb) {
-      cb.addEventListener("change", function () {
-        var st = loadChecklistState();
-        if (!st[monthKey]) st[monthKey] = {};
-        st[monthKey][cb.dataset.id] = cb.checked;
-        saveChecklistState(st);
-        renderChecklist();
+    $("materiaisGrid").querySelectorAll("input").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        if (!precos[inp.dataset.mat]) precos[inp.dataset.mat] = {};
+        precos[inp.dataset.mat][inp.dataset.tipo] = Number(inp.value);
+        saveJSON(PRICES_KEY, precos);
+        renderMateriais();
+        renderLotes();
       });
     });
   }
 
-  function renderCalendar(porte) {
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth();
-    var daysInMonth = new Date(year, month + 1, 0).getDate();
-    var firstDay = new Date(year, month, 1).getDay();
+  function materialOptions(selected) {
+    return MATERIAIS.map(function (m) {
+      return "<option value='" + m.id + "'" + (m.id === selected ? " selected" : "") + ">" + m.nome + "</option>";
+    }).join("");
+  }
 
-    document.getElementById("calMesLabel").textContent = MESES[month] + " " + year;
-
-    var filtered = OBRIGACOES.filter(function (o) {
-      if (porte === "pequeno") return ["das", "fgts", "iss"].indexOf(o.id) >= 0;
-      return true;
+  function calcLotes() {
+    var receita = 0, custo = 0, peso = 0;
+    lotes.forEach(function (l) {
+      var p = precos[l.material] || {};
+      var pv = l.precoVenda != null ? l.precoVenda : (p.venda || 0);
+      var pc = l.precoCompra != null ? l.precoCompra : (p.compra || 0);
+      receita += l.peso * pv;
+      custo += l.peso * pc;
+      peso += l.peso;
     });
+    return { receita: receita, custo: custo, margem: receita - custo, peso: peso };
+  }
 
-    var eventsByDay = {};
-    filtered.forEach(function (o) {
-      if (o.meses && o.meses.indexOf(month + 1) < 0) return;
-      if (!eventsByDay[o.dia]) eventsByDay[o.dia] = [];
-      eventsByDay[o.dia].push(o);
-    });
-
-    var html = "<div class='cal-weekdays'>" +
-      ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(function (d) {
-        return "<span>" + d + "</span>";
-      }).join("") + "</div><div class='cal-days'>";
-
-    for (var i = 0; i < firstDay; i++) html += "<div class='cal-day empty'></div>";
-
-    for (var day = 1; day <= daysInMonth; day++) {
-      var isToday = day === now.getDate();
-      var events = eventsByDay[day] || [];
-      var cls = "cal-day" + (isToday ? " today" : "") + (events.length ? " has-event" : "");
-      html += "<div class='" + cls + "'>" +
-        "<span class='cal-num'>" + day + "</span>" +
-        (events.length ? "<div class='cal-events'>" + events.map(function (e) {
-          return "<span class='cal-event' title='" + e.desc + "'>" + e.nome + "</span>";
-        }).join("") + "</div>" : "") +
+  function renderLotes() {
+    var container = $("lotesContainer");
+    container.innerHTML = lotes.map(function (l, i) {
+      var mat = MATERIAIS.find(function (m) { return m.id === l.material; }) || MATERIAIS[0];
+      var p = precos[l.material] || { venda: mat.precoRef, compra: mat.precoCompra };
+      return "<div class='lote-row' data-idx='" + i + "'>" +
+        "<select class='select-modern lote-mat'>" + materialOptions(l.material) + "</select>" +
+        "<div class='input-suffix'><input type='number' class='lote-peso' min='0' step='10' value='" + l.peso + "' /><span>kg</span></div>" +
+        "<div class='input-prefix compact'><span>R$</span><input type='number' class='lote-venda' step='0.01' value='" + (l.precoVenda != null ? l.precoVenda : p.venda) + "' /></div>" +
+        "<div class='input-prefix compact'><span>R$</span><input type='number' class='lote-compra' step='0.01' value='" + (l.precoCompra != null ? l.precoCompra : p.compra) + "' /></div>" +
+        "<strong class='lote-total'>" + brl(l.peso * (l.precoVenda != null ? l.precoVenda : p.venda)) + "</strong>" +
+        "<button type='button' class='btn-del-lote' data-idx='" + i + "'>&times;</button>" +
       "</div>";
+    }).join("");
+
+    if (!lotes.length) {
+      container.innerHTML = "<p class='cenario-hint'>Adicione lotes para simular vendas ao mercado.</p>";
     }
 
-    html += "</div>";
-    document.getElementById("calendarioGrid").innerHTML = html;
+    container.querySelectorAll(".lote-row").forEach(function (row) {
+      var idx = Number(row.dataset.idx);
+      function sync() {
+        lotes[idx].material = row.querySelector(".lote-mat").value;
+        lotes[idx].peso = Number(row.querySelector(".lote-peso").value || 0);
+        lotes[idx].precoVenda = Number(row.querySelector(".lote-venda").value || 0);
+        lotes[idx].precoCompra = Number(row.querySelector(".lote-compra").value || 0);
+        saveLotes();
+        updateVendasResumo();
+        row.querySelector(".lote-total").textContent = brl(lotes[idx].peso * lotes[idx].precoVenda);
+      }
+      row.querySelectorAll("select, input").forEach(function (el) { el.addEventListener("input", sync); el.addEventListener("change", sync); });
+    });
+
+    container.querySelectorAll(".btn-del-lote").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        lotes.splice(Number(btn.dataset.idx), 1);
+        saveLotes();
+        renderLotes();
+        updateVendasResumo();
+      });
+    });
+
+    updateVendasResumo();
   }
 
-  function addToHistory(result) {
-    var entry = {
-      id: "hist_" + Date.now(),
-      ts: Date.now(),
-      nome: result.input.nome || "Sem nome",
-      faturamento: result.input.faturamento,
-      regime: result.best.regime,
-      imposto: result.best.imposto,
-      porte: result.input.porte
-    };
-    var list = loadHistory();
-    list.unshift(entry);
-    saveHistory(list);
-    renderHistory();
+  function updateVendasResumo() {
+    var c = calcLotes();
+    $("vrReceita").textContent = brl(c.receita);
+    $("vrCusto").textContent = brl(c.custo);
+    $("vrMargem").textContent = brl(c.margem);
+    $("vrPeso").textContent = kg(c.peso);
   }
 
-  function renderHistory() {
-    var list = loadHistory();
-    var el = document.getElementById("historicoLista");
-    if (!list.length) {
-      el.className = "history-list empty-hint";
-      el.innerHTML = "<p>Nenhuma simulação registrada ainda.</p>";
-      return;
-    }
-    el.className = "history-list";
-    el.innerHTML = list.map(function (h) {
-      var date = new Date(h.ts).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-      return "<article class='history-item'>" +
-        "<div class='history-main'><strong>" + h.nome + "</strong>" +
-        "<span>" + REGIME_LABELS[h.regime] + " · " + brl(h.imposto) + "/ano</span></div>" +
-        "<div class='history-meta'>" + date + " · " + brl(h.faturamento) + " fat.</div>" +
+  function aplicarVendasAoFiscal() {
+    var c = calcLotes();
+    if (c.receita <= 0) { showToast("Adicione lotes com peso e preço"); return; }
+    var anual = c.receita * 12;
+    $("faturamento").value = Math.round(anual);
+    $("custos").value = Math.round(c.custo * 12);
+    $("volumeAnual").value = Math.round(c.peso * 12);
+    showToast("Valores aplicados ao diagnóstico fiscal", "success");
+  }
+
+  function renderCompliance(seg) {
+    var items = COMPLIANCE[seg] || [];
+    var obrig = items.filter(function (i) { return i.nivel === "obrigatorio"; }).length;
+    $("complianceStatus").textContent = obrig + " obrigatório(s)";
+    $("complianceStatus").className = "status-pill " + (obrig > 2 ? "warn" : "ok");
+
+    $("complianceList").innerHTML = items.map(function (item) {
+      var cls = item.nivel === "obrigatorio" ? "obrig" : item.nivel === "recomendado" ? "rec" : "cond";
+      return "<article class='compliance-item " + cls + "'>" +
+        "<div class='compliance-badge'>" + item.nivel + "</div>" +
+        "<div><strong>" + item.req + "</strong><span>" + item.desc + "</span></div>" +
       "</article>";
     }).join("");
   }
 
-  function buildPlan(porte, bestRegime, economiaAno) {
-    var common = [
-      "Feche DRE e fluxo de caixa dos últimos 12 meses para validar os números.",
-      "Configure alertas de vencimento com 7 dias de antecedência.",
-      "Revise CNAE, enquadramento e créditos com seu contador."
+  function renderMercado(seg) {
+    var canais = MERCADO[seg] || [];
+    $("mercadoContent").innerHTML = canais.map(function (c) {
+      return "<article class='mercado-card'>" +
+        "<span class='mercado-icon'>" + c.icon + "</span>" +
+        "<strong>" + c.canal + "</strong>" +
+        "<p>" + c.desc + "</p>" +
+      "</article>";
+    }).join("");
+  }
+
+  function renderLimitsInline(result) {
+    var el = $("limitesInline");
+    if (!result) { el.classList.add("hidden"); return; }
+    var fat = result.input.faturamento;
+    var meiPct = Math.min(100, (fat / LIMIT_MEI) * 100);
+    var simplesPct = Math.min(100, (fat / LIMIT_SIMPLES) * 100);
+    el.classList.remove("hidden");
+    el.innerHTML =
+      "<article class='limit-card'><div class='limit-head'><strong>MEI</strong><span>R$ 81k/ano</span></div>" +
+      "<div class='limit-bar-wrap'><div class='limit-bar' style='width:" + meiPct + "%'></div></div>" +
+      "<p class='limit-meta'>" + (fat > LIMIT_MEI ? "Acima do MEI — migre para Simples" : pct(meiPct) + " do teto") + "</p></article>" +
+      "<article class='limit-card'><div class='limit-head'><strong>Simples</strong><span>R$ 4,8 mi</span></div>" +
+      "<div class='limit-bar-wrap'><div class='limit-bar blue' style='width:" + simplesPct + "%'></div></div>" +
+      "<p class='limit-meta'>" + pct(simplesPct) + " do teto nacional</p></article>";
+  }
+
+  function pct(v) { return v.toFixed(1) + "%"; }
+
+  function buildPlan(seg, bestRegime, economiaAno) {
+    var segInfo = SEGMENTOS[seg];
+    var base = [
+      "Perfil: " + segInfo.label + " — CNAE ref.: " + segInfo.cnae,
+      "Regime sugerido: " + REGIME_LABELS[bestRegime] + " (economia est. " + brl(economiaAno) + "/ano)",
+      segInfo.dica,
+      "Atualize cotações semanalmente com compradores locais",
+      "Padronize separação por material para aumentar preço de venda",
+      "Emita documento fiscal em toda venda B2B"
     ];
-    var byPorte = {
-      pequeno: [
-        "Crie conta-reserva separada para tributos.",
-        "Acompanhe limite de faturamento mensal.",
-        "Padronize emissão de nota e retenções."
-      ],
-      medio: [
-        "Compare impacto de pró-labore mês a mês.",
-        "Reprecifique serviços com margem baixa.",
-        "Consolide obrigações em calendário único."
-      ],
-      grande: [
-        "Consolide apuração por unidade/filial.",
-        "Audite créditos e retenções mensalmente.",
-        "Simule expansão antes de contratar."
-      ]
+    var extra = {
+      catador: ["Cadastre-se como MEI se faturamento ≤ R$ 81k", "Identifique 2–3 galpões com melhor preço/kg"],
+      cooperativa: ["Formalize rateio mensal entre associados", "Busque contrato com indústria da região"],
+      galpao: ["Instale balança calibrada e registro de lotes", "Negocie frete e MTR com transportadora"],
+      beneficiador: ["Invista em prensa/enfardadeira por material", "Certifique umidade e impureza do lote"],
+      industria: ["Estruture contrato de fornecimento anual", "Mapeie créditos de ICMS e logística reversa"]
     };
-    return ["Regime ideal: " + REGIME_LABELS[bestRegime] + " — economia de " + brl(economiaAno) + "/ano"]
-      .concat(common, byPorte[porte]);
+    return base.concat(extra[seg] || []);
   }
 
   function renderChart(items, best) {
     var max = items[0].imposto;
     chartArea.innerHTML = items.map(function (item) {
-      var pctVal = Math.round((item.imposto / max) * 100);
+      var w = Math.round((item.imposto / max) * 100);
       var isBest = item.regime === best.regime;
-      return "<div class='chart-row'>" +
-        "<span class='chart-label" + (isBest ? " best" : "") + "'>" + REGIME_LABELS[item.regime] + "</span>" +
-        "<div class='chart-bar-wrap'><div class='chart-bar" + (isBest ? " best" : "") + "' style='width:0%' data-w='" + pctVal + "'></div></div>" +
-        "<span class='chart-value'>" + brl(item.imposto) + "</span>" +
-      "</div>";
+      return "<div class='chart-row'><span class='chart-label" + (isBest ? " best" : "") + "'>" + REGIME_LABELS[item.regime] + "</span>" +
+        "<div class='chart-bar-wrap'><div class='chart-bar" + (isBest ? " best" : "") + "' style='width:0%' data-w='" + w + "'></div></div>" +
+        "<span class='chart-value'>" + brl(item.imposto) + "</span></div>";
     }).join("");
     requestAnimationFrame(function () {
-      chartArea.querySelectorAll(".chart-bar").forEach(function (bar) {
-        bar.style.width = bar.dataset.w + "%";
-      });
+      chartArea.querySelectorAll(".chart-bar").forEach(function (b) { b.style.width = b.dataset.w + "%"; });
     });
   }
 
   function renderTable(items, best) {
     tabela.innerHTML = items.map(function (item) {
       var cls = item.regime === best.regime ? "best-row" : "";
-      return "<tr class='" + cls + "'>" +
-        "<td>" + REGIME_LABELS[item.regime] + (cls ? " ★" : "") + "</td>" +
-        "<td>" + brl(item.imposto) + "</td>" +
-        "<td>" + (item.aliquota * 100).toFixed(2) + "%</td>" +
-      "</tr>";
+      return "<tr class='" + cls + "'><td>" + REGIME_LABELS[item.regime] + (cls ? " ★" : "") + "</td>" +
+        "<td>" + brl(item.imposto) + "</td><td>" + (item.aliquota * 100).toFixed(2) + "%</td></tr>";
     }).join("");
   }
 
-  function renderKPIs(result) {
-    document.getElementById("kpiRegime").textContent = REGIME_LABELS[result.best.regime];
-    document.getElementById("kpiImposto").textContent = brl(result.best.imposto);
-    document.getElementById("kpiEconomia").textContent = brl(result.economiaAno);
-    document.getElementById("kpiReserva").textContent = brl(result.reservaMensal);
+  function renderKPIs(result, vendasCalc) {
+    $("kpiReceita").textContent = brl(vendasCalc ? vendasCalc.receita : result.receitaMensal);
+    $("kpiMargem").textContent = result.margemLiquida.toFixed(1) + "%";
+    $("kpiRegime").textContent = REGIME_LABELS[result.best.regime];
+    $("kpiVolume").textContent = result.input.volumeAnual ? kg(result.input.volumeAnual / 12) : "—";
     kpiGrid.classList.remove("hidden");
-  }
-
-  function setTierActive(porte) {
-    ["pequeno", "medio", "grande"].forEach(function (p) {
-      var el = document.getElementById("tier-" + p);
-      if (el) el.classList.toggle("active", p === porte);
-    });
-  }
-
-  function shareWhatsApp() {
-    if (!lastResult) return;
-    var d = lastResult.input;
-    var best = lastResult.best;
-    var text = "📊 *Radar Tributário*\n\n" +
-      "Empresa: " + (d.nome || "—") + "\n" +
-      "Faturamento: " + brl(d.faturamento) + "/ano\n" +
-      "Regime recomendado: " + REGIME_LABELS[best.regime] + "\n" +
-      "Imposto estimado: " + brl(best.imposto) + "/ano\n" +
-      "Reserva mensal: " + brl(lastResult.reservaMensal) + "\n" +
-      "Economia potencial: " + brl(lastResult.economiaAno) + "\n\n" +
-      "_Simulação educacional — valide com seu contador._";
-    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
   }
 
   function renderResult(result) {
@@ -524,39 +463,34 @@
 
     var d = result.input;
     var best = result.best;
+    var vendasCalc = calcLotes();
 
     resumo.className = "result-summary";
     resumo.innerHTML =
-      "<div class='company-name'>" + (d.nome || "Sua empresa") + "</div>" +
-      "<p>Recomendamos <span class='highlight'>" + REGIME_LABELS[best.regime] + "</span> — " +
-      "imposto estimado de <strong>" + brl(best.imposto) + "/ano</strong>, " +
-      "margem líquida de <strong>" + result.margemLiquida.toFixed(1) + "%</strong>.</p>";
+      "<div class='company-name'>" + (d.nome || "Sua operação") + " · " + SEGMENTOS[d.segmento].label + "</div>" +
+      "<p>Regime <span class='highlight'>" + REGIME_LABELS[best.regime] + "</span> — imposto " +
+      "<strong>" + brl(best.imposto) + "/ano</strong>, margem líquida <strong>" + result.margemLiquida.toFixed(1) + "%</strong>. " +
+      (d.volumeAnual ? "Volume: <strong>" + kg(d.volumeAnual) + "/ano</strong>." : "") + "</p>";
 
-    resultSubtitle.textContent = "Comparativo para " + d.nome;
+    resultSubtitle.textContent = "Diagnóstico — " + (d.nome || "operação");
     chartArea.classList.remove("hidden");
     tableWrap.classList.remove("hidden");
 
-    renderKPIs(result);
+    renderKPIs(result, vendasCalc.peso > 0 ? vendasCalc : null);
     renderChart(result.regimes, best);
     renderTable(result.regimes, best);
-    setTierActive(d.porte);
-    renderLimits(result);
-    renderProjection(result);
-    renderScenario(result);
-    renderCalendar(d.porte);
-    addToHistory(result);
+    renderLimitsInline(result);
 
-    planoAcao.innerHTML = buildPlan(d.porte, best.regime, result.economiaAno).map(function (item, i) {
+    planoAcao.innerHTML = buildPlan(d.segmento, best.regime, result.economiaAno).map(function (item, i) {
       return "<li><span class='step-num'>" + (i + 1) + "</span><span>" + item + "</span></li>";
     }).join("");
 
-    renderAlerts(d.porte, result.reservaMensal);
+    renderAlerts(SEGMENTOS[d.segmento].porte, result.reservaMensal);
+    addToHistory(result);
   }
 
   function nextDueDate(o) {
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth();
+    var now = new Date(), year = now.getFullYear(), month = now.getMonth();
     if (o.meses) {
       for (var i = 0; i < o.meses.length; i++) {
         var c = new Date(year, o.meses[i] - 1, o.dia);
@@ -581,42 +515,69 @@
 
   function renderAlerts(porte, reservaMensal) {
     var filtered = OBRIGACOES.filter(function (o) {
-      if (porte === "pequeno") return ["das", "fgts", "iss"].indexOf(o.id) >= 0;
+      if (currentSegment === "catador") return ["das", "defis"].indexOf(o.id) >= 0;
       return true;
     });
     var pendentes = 0;
-
     listaAlertas.innerHTML = filtered.map(function (o) {
       var due = nextDueDate(o);
       var dias = daysUntil(due);
-      var cls = "ok";
-      var badge = dias + "d";
+      var cls = "ok", badge = dias + "d";
       if (dias <= 3) { cls = "urgente"; badge = dias === 0 ? "Hoje" : dias + "d"; pendentes++; }
       else if (dias <= 7) { cls = "proximo"; pendentes++; }
       var hint = o.tipo + " · " + formatDate(due);
       if (o.id === "das" && reservaMensal) hint += " · Reserve " + brl(reservaMensal);
-      return "<article class='alert-card " + cls + "'>" +
-        "<div class='alert-icon'>" + o.icon + "</div>" +
+      return "<article class='alert-card " + cls + "'><div class='alert-icon'>" + o.icon + "</div>" +
         "<div class='alert-body'><strong>" + o.nome + "</strong><span>" + o.desc + " · " + hint + "</span></div>" +
-        "<span class='alert-badge " + cls + "'>" + badge + "</span>" +
-      "</article>";
+        "<span class='alert-badge " + cls + "'>" + badge + "</span></article>";
     }).join("");
-
     alertasResumo.textContent = pendentes ? pendentes + " alerta(s)" : "Em dia";
     alertasResumo.className = "status-pill " + (pendentes ? "warn" : "ok");
+  }
+
+  function renderChecklist() {
+    var state = loadJSON(CHECKLIST_KEY, {});
+    var monthKey = new Date().getFullYear() + "-" + (new Date().getMonth() + 1);
+    var monthState = state[monthKey] || {};
+    var done = 0;
+    $("checklistItems").innerHTML = CHECKLIST_BASE.map(function (item) {
+      var checked = !!monthState[item.id];
+      if (checked) done++;
+      return "<li class='check-item" + (checked ? " done" : "") + "'><label>" +
+        "<input type='checkbox' data-id='" + item.id + "' " + (checked ? "checked" : "") + " />" +
+        "<span>" + item.label + "</span></label></li>";
+    }).join("");
+    $("checklistProgress").textContent = done + "/" + CHECKLIST_BASE.length;
+    $("checklistProgress").className = "status-pill " + (done === CHECKLIST_BASE.length ? "ok" : "warn");
+    $("checklistItems").querySelectorAll("input").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var st = loadJSON(CHECKLIST_KEY, {});
+        if (!st[monthKey]) st[monthKey] = {};
+        st[monthKey][cb.dataset.id] = cb.checked;
+        saveJSON(CHECKLIST_KEY, st);
+        renderChecklist();
+      });
+    });
+  }
+
+  function addToHistory(result) {
+    var list = loadJSON(HISTORY_KEY, []);
+    list.unshift({
+      id: "h_" + Date.now(), ts: Date.now(), nome: result.input.nome || "—",
+      segmento: result.input.segmento, faturamento: result.input.faturamento,
+      regime: result.best.regime, imposto: result.best.imposto
+    });
+    saveJSON(HISTORY_KEY, list.slice(0, 20));
   }
 
   function renderCompanies() {
     var list = loadCompanies();
     listaEmpresas.classList.toggle("empty", !list.length);
     if (!list.length) { listaEmpresas.innerHTML = ""; return; }
-
     listaEmpresas.innerHTML = list.map(function (emp) {
       return "<div class='company-chip" + (emp.id === activeCompanyId ? " active" : "") + "' data-id='" + emp.id + "'>" +
-        "<span>" + emp.nome + "</span>" +
-        "<button type='button' class='del' data-del='" + emp.id + "'>&times;</button></div>";
+        "<span>" + emp.nome + "</span><button type='button' class='del' data-del='" + emp.id + "'>&times;</button></div>";
     }).join("");
-
     listaEmpresas.querySelectorAll(".company-chip").forEach(function (chip) {
       chip.addEventListener("click", function (e) {
         if (e.target.classList.contains("del")) return;
@@ -624,6 +585,7 @@
         if (emp) {
           activeCompanyId = emp.id;
           setFormData(emp);
+          setSegment(emp.segmento || "catador");
           renderCompanies();
           emp.lastResult ? renderResult(emp.lastResult) : form.dispatchEvent(new Event("submit"));
         }
@@ -635,14 +597,14 @@
         saveCompanies(loadCompanies().filter(function (c) { return c.id !== btn.dataset.del; }));
         if (activeCompanyId === btn.dataset.del) activeCompanyId = null;
         renderCompanies();
-        showToast("Empresa removida");
+        showToast("Operação removida");
       });
     });
   }
 
   function saveCurrentCompany(result) {
     var data = getFormData();
-    if (!data.nome) { showToast("Informe o nome da empresa"); return; }
+    if (!data.nome) { showToast("Informe o nome da operação"); return; }
     var list = loadCompanies();
     var existing = list.find(function (c) { return c.id === activeCompanyId; });
     if (existing) Object.assign(existing, data, { lastResult: result, updatedAt: Date.now() });
@@ -653,7 +615,7 @@
     }
     saveCompanies(list);
     renderCompanies();
-    showToast("Empresa salva!", "success");
+    showToast("Operação salva!", "success");
   }
 
   function resetResults() {
@@ -663,101 +625,153 @@
     kpiGrid.classList.add("hidden");
     chartArea.classList.add("hidden");
     tableWrap.classList.add("hidden");
+    $("limitesInline").classList.add("hidden");
     resumo.className = "result-empty";
-    resumo.innerHTML = "<div class='empty-icon'>📊</div><p>Preencha o formulário e clique em <strong>Simular estratégia</strong>.</p>";
+    resumo.innerHTML = "<div class='empty-icon'>♻</div><p>Use a calculadora ou preencha o diagnóstico fiscal.</p>";
     resultSubtitle.textContent = "Aguardando simulação…";
     tabela.innerHTML = "";
-    renderLimits(null);
-    renderProjection(null);
-    renderScenario(null);
+  }
+
+  function shareWhatsApp() {
+    if (!lastResult) return;
+    var d = lastResult.input;
+    var c = calcLotes();
+    var text = "♻ *Radar Reciclagem*\n\n" +
+      "Operação: " + (d.nome || "—") + "\n" +
+      "Perfil: " + SEGMENTOS[d.segmento].label + "\n" +
+      "Faturamento anual: " + brl(d.faturamento) + "\n" +
+      "Regime: " + REGIME_LABELS[lastResult.best.regime] + "\n" +
+      "Imposto est.: " + brl(lastResult.best.imposto) + "/ano\n" +
+      (c.peso > 0 ? "Lote simulado: " + kg(c.peso) + " · Receita " + brl(c.receita) + "\n" : "") +
+      "\n_Simulação educacional — valide com contador._";
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
   }
 
   function exportPdf() {
     if (!lastResult) return;
-    var d = lastResult.input;
-    var best = lastResult.best;
-    var plano = buildPlan(d.porte, best.regime, lastResult.economiaAno);
+    var d = lastResult.input, best = lastResult.best;
+    var plano = buildPlan(d.segmento, best.regime, lastResult.economiaAno);
     var win = window.open("", "_blank");
-    if (!win) { showToast("Permita pop-ups para exportar"); return; }
+    if (!win) { showToast("Permita pop-ups"); return; }
     var rows = lastResult.regimes.map(function (r) {
       return "<tr><td>" + REGIME_LABELS[r.regime] + "</td><td>" + brl(r.imposto) + "</td><td>" + (r.aliquota * 100).toFixed(2) + "%</td></tr>";
     }).join("");
-    win.document.write("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Relatório — " + d.nome + "</title>" +
-      "<style>body{font-family:system-ui,sans-serif;padding:40px;max-width:720px;margin:0 auto;color:#111}" +
-      "h1{font-size:1.3rem;border-bottom:2px solid #22c55e;padding-bottom:8px}" +
-      "table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#f5f5f5}" +
-      ".box{background:#f9fafb;padding:16px;border-radius:8px;margin:12px 0;line-height:1.7}</style></head><body>" +
-      "<h1>Radar Tributário — Relatório</h1><p>" + new Date().toLocaleString("pt-BR") + "</p>" +
-      "<div class='box'><strong>" + d.nome + "</strong><br>Faturamento: " + brl(d.faturamento) + "<br>Regime: " + REGIME_LABELS[best.regime] + "<br>Imposto: " + brl(best.imposto) + "/ano</div>" +
+    win.document.write("<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Radar Reciclagem — " + d.nome + "</title>" +
+      "<style>body{font-family:system-ui,sans-serif;padding:40px;max-width:720px;margin:0 auto}" +
+      "h1{border-bottom:2px solid #22c55e;padding-bottom:8px}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid #ddd;padding:8px}</style></head><body>" +
+      "<h1>Radar Reciclagem</h1><p>" + SEGMENTOS[d.segmento].label + " · " + new Date().toLocaleString("pt-BR") + "</p>" +
+      "<p><strong>" + d.nome + "</strong><br>Faturamento: " + brl(d.faturamento) + "<br>Regime: " + REGIME_LABELS[best.regime] + "</p>" +
       "<table><tr><th>Regime</th><th>Imposto</th><th>Alíquota</th></tr>" + rows + "</table>" +
-      "<h2>Plano 30 dias</h2><ol>" + plano.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ol>" +
-      "<p style='color:#888;font-size:0.8rem;margin-top:32px'>Simulação educacional. Consulte seu contador.</p></body></html>");
+      "<h2>Plano 30 dias</h2><ol>" + plano.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ol></body></html>");
     win.document.close();
-    win.focus();
     setTimeout(function () { win.print(); }, 400);
   }
 
-  portePills.querySelectorAll(".pill").forEach(function (pill) {
-    pill.addEventListener("click", function () { setPorte(pill.dataset.porte); });
-  });
-
-  document.querySelectorAll(".nav-item").forEach(function (link) {
-    link.addEventListener("click", function () {
-      document.querySelectorAll(".nav-item").forEach(function (l) { l.classList.remove("active"); });
-      link.classList.add("active");
-      sidebar.classList.remove("open");
-    });
-  });
-
-  if (menuBtn) menuBtn.addEventListener("click", function () { sidebar.classList.toggle("open"); });
-
-  if (crescimentoSlider) {
-    crescimentoSlider.addEventListener("input", function () {
-      renderScenario(lastResult);
-    });
+  function resetPrecos() {
+    MATERIAIS.forEach(function (m) { precos[m.id] = { venda: m.precoRef, compra: m.precoCompra }; });
+    saveJSON(PRICES_KEY, precos);
+    renderMateriais();
+    renderLotes();
+    showToast("Cotações restauradas");
   }
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var result = simulate(getFormData());
-    if (!result) { showToast("Informe o faturamento"); return; }
-    renderResult(result);
-    showToast("Simulação concluída!", "success");
-  });
+  function initDOM() {
+    form = $("simulador");
+    tabela = $("tabelaRegimes");
+    resumo = $("resumo");
+    planoAcao = $("planoAcao");
+    listaEmpresas = $("listaEmpresas");
+    listaAlertas = $("listaAlertas");
+    alertasResumo = $("alertasResumo");
+    btnExportarPdf = $("btnExportarPdf");
+    btnWhatsApp = $("btnWhatsApp");
+    btnSalvarEmpresa = $("btnSalvarEmpresa");
+    btnNovaEmpresa = $("btnNovaEmpresa");
+    btnAddLote = $("btnAddLote");
+    btnAplicarVendas = $("btnAplicarVendas");
+    btnResetPrecos = $("btnResetPrecos");
+    kpiGrid = $("kpiGrid");
+    chartArea = $("chartArea");
+    tableWrap = $("tableWrap");
+    resultSubtitle = $("resultSubtitle");
+    segmentSelect = $("segmento");
+    segmentPills = $("segmentPills");
+    toast = $("toast");
+    menuBtn = $("menuBtn");
+    sidebar = $("sidebar");
+  }
 
-  btnSalvarEmpresa.addEventListener("click", function () {
-    var result = simulate(getFormData());
-    if (!result) { showToast("Simule antes de salvar"); return; }
-    renderResult(result);
-    saveCurrentCompany(result);
-  });
+  function bindEvents() {
+    segmentPills.querySelectorAll(".pill").forEach(function (pill) {
+      pill.addEventListener("click", function () { setSegment(pill.dataset.segment); });
+    });
 
-  btnNovaEmpresa.addEventListener("click", function () {
-    activeCompanyId = null;
-    setFormData({ nome: "", porte: "pequeno", faturamento: 0, folha: 0, custos: 0, setor: "servicos" });
-    resetResults();
+    document.querySelectorAll(".segment-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        setSegment(card.dataset.segment);
+        $("segmentPills").querySelector("[data-segment='" + card.dataset.segment + "']").click();
+      });
+    });
+
+    document.querySelectorAll(".nav-item").forEach(function (link) {
+      link.addEventListener("click", function () {
+        document.querySelectorAll(".nav-item").forEach(function (l) { l.classList.remove("active"); });
+        link.classList.add("active");
+        sidebar.classList.remove("open");
+      });
+    });
+
+    if (menuBtn) menuBtn.addEventListener("click", function () { sidebar.classList.toggle("open"); });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var result = simulate(getFormData());
+      if (!result) { showToast("Informe o faturamento"); return; }
+      renderResult(result);
+      showToast("Simulação concluída!", "success");
+    });
+
+    btnSalvarEmpresa.addEventListener("click", function () {
+      var result = simulate(getFormData());
+      if (!result) { showToast("Simule antes de salvar"); return; }
+      renderResult(result);
+      saveCurrentCompany(result);
+    });
+
+    btnNovaEmpresa.addEventListener("click", function () {
+      activeCompanyId = null;
+      setFormData({ nome: "", segmento: "catador", faturamento: 0, folha: 0, custos: 0, tipoOperacao: "comercio", volumeAnual: 0 });
+      setSegment("catador");
+      resetResults();
+      renderCompanies();
+      showToast("Nova operação");
+    });
+
+    btnExportarPdf.addEventListener("click", exportPdf);
+    btnWhatsApp.addEventListener("click", shareWhatsApp);
+    btnAddLote.addEventListener("click", function () {
+      lotes.push({ material: "pet", peso: 100, precoVenda: null, precoCompra: null });
+      saveLotes();
+      renderLotes();
+    });
+    btnAplicarVendas.addEventListener("click", aplicarVendasAoFiscal);
+    btnResetPrecos.addEventListener("click", resetPrecos);
+  }
+
+  function init() {
+    initDOM();
+    initPrecos();
+    loadLotes();
+    bindEvents();
+    renderMateriais();
+    renderLotes();
+    setSegment("catador");
     renderCompanies();
-    renderAlerts("pequeno", 0);
-    renderCalendar("pequeno");
-    document.getElementById("nomeEmpresa").focus();
-    showToast("Nova empresa");
-  });
-
-  btnExportarPdf.addEventListener("click", exportPdf);
-  btnWhatsApp.addEventListener("click", shareWhatsApp);
-
-  if (btnLimparHistorico) {
-    btnLimparHistorico.addEventListener("click", function () {
-      saveHistory([]);
-      renderHistory();
-      showToast("Histórico limpo");
-    });
+    renderChecklist();
+    planoAcao.innerHTML = buildPlan("catador", "simples", 0).map(function (item, i) {
+      return "<li><span class='step-num'>" + (i + 1) + "</span><span>" + item + "</span></li>";
+    }).join("");
   }
 
-  renderCompanies();
-  renderAlerts("pequeno", 0);
-  renderChecklist();
-  renderCalendar("pequeno");
-  renderHistory();
-  renderLimits(null);
+  init();
 })();
