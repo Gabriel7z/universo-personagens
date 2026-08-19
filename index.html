@@ -3,149 +3,239 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNIVERSO — Personagens e Histórias</title>
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --paper: #f2ece0;
-      --ink: #111;
-      --accent: #8b3a2a;
-      --fire: #b5502e;
-      --shadow: #7a7fb0;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: #ddd;
-      font-family: "Georgia", "Times New Roman", serif;
-      min-height: 100vh;
-    }
-    header {
-      text-align: center;
-      padding: 3rem 1rem 2rem;
-      border-bottom: 1px solid #222;
-    }
-    header h1 {
-      font-size: 2rem;
-      letter-spacing: 0.45em;
-      font-weight: 400;
-      color: var(--paper);
-      margin-left: 0.45em;
-    }
-    header p {
-      margin-top: 0.7rem;
-      font-size: 0.85rem;
-      color: #666;
-      letter-spacing: 0.15em;
-    }
-    .content {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2.5rem 1rem 4rem;
-    }
-    section h2 {
-      font-size: 0.85rem;
-      letter-spacing: 0.3em;
-      color: #888;
-      text-transform: uppercase;
-      font-weight: 400;
-      border-bottom: 1px solid #222;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1.25rem;
-    }
-    section + section { margin-top: 2.75rem; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.25rem;
-    }
-    a.card {
-      display: block;
-      border: 1px solid #222;
-      padding: 1.4rem 1.5rem;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.2s;
-    }
-    a.card:hover { border-color: var(--paper); }
-    a.card h3 {
-      font-size: 1.05rem;
-      letter-spacing: 0.15em;
-      color: var(--paper);
-      font-weight: 400;
-      margin-bottom: 0.4rem;
-    }
-    a.card .tag {
-      display: inline-block;
-      font-size: 0.62rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin-bottom: 0.7rem;
-    }
-    a.card p {
-      font-size: 0.85rem;
-      line-height: 1.6;
-      color: #999;
-    }
-    .t-mundo   { color: var(--accent); }
-    .t-fogo    { color: var(--fire); }
-    .t-sombra  { color: var(--shadow); }
-    .t-cena    { color: #999; }
-  </style>
+  <meta name="description" content="UNIVERSO — Portfólio interativo de worldbuilding, personagens originais e histórias ilustradas em estilo mangá." />
+  <title>UNIVERSO — Portfólio Interativo</title>
+  <link rel="stylesheet" href="assets/portfolio.css" />
 </head>
 <body>
 
-<header>
-  <h1>UNIVERSO</h1>
-  <p>Personagens, mundos e histórias ilustradas</p>
-</header>
+<!-- ── Navegação ── -->
+<nav class="nav">
+  <a class="nav-logo" href="#">UNIVERSO</a>
+  <button class="nav-toggle" aria-label="Menu">MENU</button>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#mundos">Mundos</a></li>
+    <li><a href="#personagens">Personagens</a></li>
+    <li><a href="#cenas">Cenas</a></li>
+    <li><a href="#jornada">Jornada</a></li>
+  </ul>
+</nav>
 
-<div class="content">
+<!-- ── Hero ── -->
+<section class="hero" id="inicio">
+  <canvas id="particles" aria-hidden="true"></canvas>
+  <div class="hero-orb hero-orb--1" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb--2" aria-hidden="true"></div>
+  <div class="hero-orb hero-orb--3" aria-hidden="true"></div>
 
-  <section>
-    <h2>Mundo</h2>
-    <div class="cards">
-      <a class="card" href="aethon/index.html">
+  <div class="hero-content">
+    <p class="hero-label">Worldbuilding · Mangá · Personagens Originais</p>
+    <h1 class="hero-title">UNIVERSO</h1>
+    <p class="hero-sub">
+      Mundos sombrios, guerreiros de fogo e domadores das trevas.<br />
+      Histórias ilustradas navegáveis — um universo feito página a página.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn--primary" href="#mundos">Explorar mundos</a>
+      <a class="btn" href="#personagens">Ver personagens</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true">
+    <span></span>
+    Scroll
+  </div>
+</section>
+
+<!-- ── Sobre ── -->
+<section class="section" id="sobre">
+  <div class="section-header reveal">
+    <span class="section-num">01 — Sobre</span>
+    <h2 class="section-title">O Projeto</h2>
+    <p class="section-desc">
+      Um universo original de fantasia sombria, construído em HTML ilustrado —
+      cada personagem com ficha, história e artes; cada mundo com capítulos e cenas cinematográficas.
+    </p>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-text reveal reveal-delay-1">
+      <p>
+        <strong style="color: var(--paper); font-weight: 400;">UNIVERSO</strong> nasceu da vontade de
+        criar algo entre mangá e worldbuilding: personagens com profundidade, poderes com regras,
+        e histórias que você lê como se virasse páginas de um livro ilustrado.
+      </p>
+      <p>
+        Do crepúsculo eterno de Aethon ao choque entre fogo e sombra,
+        cada seção é uma porta de entrada para um pedaço diferente deste cosmos.
+      </p>
+    </div>
+
+    <div class="about-stats reveal reveal-delay-2">
+      <div class="stat">
+        <div class="stat-num" data-count="3" data-suffix="">0</div>
+        <div class="stat-label">Mundos &amp; Arcos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-count="5" data-suffix="">0</div>
+        <div class="stat-label">Personagens</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-count="5" data-suffix="">0</div>
+        <div class="stat-label">Páginas ilustradas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-count="3" data-suffix="">0</div>
+        <div class="stat-label">Cenas épicas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Mundos ── -->
+<section class="section" id="mundos">
+  <div class="section-header reveal">
+    <span class="section-num">02 — Mundos</span>
+    <h2 class="section-title">Aethon</h2>
+    <p class="section-desc">
+      O Sol não se move. A vida existe apenas na Faixa do Crepúsculo — e a Faixa está encolhendo.
+    </p>
+  </div>
+
+  <div class="cards">
+    <a class="card card--mundo reveal reveal-delay-1" href="aethon/index.html" data-tilt>
+      <div class="card-accent card-accent--mundo"></div>
+      <div class="card-body">
+        <div class="card-icon">☀</div>
         <h3>AETHON — Capítulo 01</h3>
         <span class="tag t-mundo">História ilustrada · 5 páginas</span>
-        <p>O Sol não se move. A vida existe apenas na Faixa do Crepúsculo — e a Faixa está encolhendo. Vesna, a Devoradora, atravessa o Setor V.</p>
-      </a>
-      <a class="card" href="aethon/personagens.html">
+        <p>Vesna, a Devoradora, atravessa o Setor V enquanto o crepúsculo encolhe. Leia com setas do teclado ou clique.</p>
+        <span class="card-arrow">Ler capítulo →</span>
+      </div>
+    </a>
+
+    <a class="card card--mundo reveal reveal-delay-2" href="aethon/personagens.html" data-tilt>
+      <div class="card-accent card-accent--mundo"></div>
+      <div class="card-body">
+        <div class="card-icon">◈</div>
         <h3>Dossiê — Os Três Mais Fortes</h3>
-        <span class="tag t-mundo">Vesna · O Vigia do Véu · Solenne</span>
-        <p>Fichas ilustradas dos três limiares mais poderosos da Faixa do Crepúsculo, com marcas, fraquezas e segredos.</p>
-      </a>
-    </div>
-  </section>
+        <span class="tag t-mundo">Vesna · O Vigia · Solenne</span>
+        <p>Fichas ilustradas dos três limiares mais poderosos da Faixa, com marcas, fraquezas e segredos ocultos.</p>
+        <span class="card-arrow">Abrir dossiê →</span>
+      </div>
+    </a>
+  </div>
+</section>
 
-  <section>
-    <h2>Personagens</h2>
-    <div class="cards">
-      <a class="card" href="uriel/index.html">
-        <h3>URIEL</h3>
-        <span class="tag t-fogo">O Braço de Ferro · Fogo</span>
-        <p>Guerreiro viking de 1,79m com braço mecânico e poder de fogo. Três artes para análise, ficha, história e a invocação da Fênix.</p>
-      </a>
-      <a class="card" href="nazura/index.html">
+<div class="divider"></div>
+
+<!-- ── Personagens ── -->
+<section class="section" id="personagens">
+  <div class="section-header reveal">
+    <span class="section-num">03 — Personagens</span>
+    <h2 class="section-title">Heróis &amp; Antagonistas</h2>
+    <p class="section-desc">
+      Guerreiros, domadores e limiares — cada um com poderes, história e galeria de artes.
+    </p>
+  </div>
+
+  <div class="cards">
+    <a class="card card--fogo reveal reveal-delay-1" href="uriel/index.html" data-tilt>
+      <div class="card-accent card-accent--fogo"></div>
+      <div class="card-body">
+        <div class="card-icon">🔥</div>
+        <h3>URIEL — O Braço de Ferro</h3>
+        <span class="tag t-fogo">Fogo · Braço mecânico · Fênix</span>
+        <p>Guerreiro viking de 1,79m. Três artes para análise, ficha completa, história e a invocação da Fênix.</p>
+        <span class="card-arrow">Conhecer Uriel →</span>
+      </div>
+    </a>
+
+    <a class="card card--sombra reveal reveal-delay-2" href="nazura/index.html" data-tilt>
+      <div class="card-accent card-accent--sombra"></div>
+      <div class="card-body">
+        <div class="card-icon">🌑</div>
         <h3>NAZURA EIDHAME</h3>
-        <span class="tag t-sombra">Domador das Trevas · Neo da Escuridão</span>
-        <p>Líder da Resistência 01. Herdeiro do clã dos Assassinos das Sombras, porta a katana Ilamia de sua falecida mãe. Cap: Raiz da Vingança.</p>
-      </a>
-    </div>
-  </section>
+        <span class="tag t-sombra">Trevas · Katana Ilamia · Resistência 01</span>
+        <p>Líder da Resistência 01. Herdeiro do clã dos Assassinos das Sombras. Capítulo: Raiz da Vingança.</p>
+        <span class="card-arrow">Conhecer Nazura →</span>
+      </div>
+    </a>
+  </div>
+</section>
 
-  <section>
-    <h2>Cenas</h2>
-    <div class="cards">
-      <a class="card" href="cena-uriel-nazura/index.html">
+<div class="divider"></div>
+
+<!-- ── Cenas ── -->
+<section class="section" id="cenas">
+  <div class="section-header reveal">
+    <span class="section-num">04 — Cenas</span>
+    <h2 class="section-title">Confrontos Épicos</h2>
+    <p class="section-desc">
+      Momentos-chave ilustrados em 3 atos — como frames de um filme de animação.
+    </p>
+  </div>
+
+  <div class="cards">
+    <a class="card reveal reveal-delay-1" href="cena-uriel-nazura/index.html" data-tilt>
+      <div class="card-accent card-accent--cena"></div>
+      <div class="card-body">
+        <div class="card-icon">⚔</div>
         <h3>URIEL × NAZURA</h3>
         <span class="tag t-cena">O Fogo e o Silêncio · 3 atos</span>
         <p>O encontro, o choque e o auge: a Fênix contra a Neo indomada. Dois lutos, dois poderes sem dono — e uma trégua improvável.</p>
-      </a>
+        <span class="card-arrow">Assistir cena →</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Jornada ── -->
+<section class="section" id="jornada">
+  <div class="section-header reveal">
+    <span class="section-num">05 — Jornada</span>
+    <h2 class="section-title">Linha do Tempo</h2>
+    <p class="section-desc">Como este universo foi construído — e para onde vai.</p>
+  </div>
+
+  <div class="timeline reveal reveal-delay-1">
+    <div class="timeline-item">
+      <h4>AETHON — O Mundo</h4>
+      <p>Criação do universo do Sol Imóvel, a Faixa do Crepúsculo e o Capítulo 01 com Vesna.</p>
     </div>
-  </section>
+    <div class="timeline-item">
+      <h4>Personagens — Uriel &amp; Nazura</h4>
+      <p>Fichas completas, galerias de artes e sistemas de poder (Fogo vs. Trevas).</p>
+    </div>
+    <div class="timeline-item">
+      <h4>Cena — O Fogo e o Silêncio</h4>
+      <p>Primeiro confronto ilustrado entre os dois protagonistas em 3 atos cinematográficos.</p>
+    </div>
+    <div class="timeline-item">
+      <h4>Portfólio Interativo</h4>
+      <p>Hub central animado — este site — reunindo tudo em uma experiência navegável.</p>
+    </div>
+  </div>
+</section>
 
-</div>
+<!-- ── Footer ── -->
+<footer class="footer">
+  <p class="footer-title">UNIVERSO</p>
+  <p class="footer-sub">Personagens, mundos e histórias ilustradas</p>
+  <nav class="footer-links">
+    <a href="#inicio">Início</a>
+    <a href="aethon/index.html">Aethon</a>
+    <a href="uriel/index.html">Uriel</a>
+    <a href="nazura/index.html">Nazura</a>
+    <a href="cena-uriel-nazura/index.html">Cena</a>
+  </nav>
+</footer>
 
+<script src="assets/portfolio.js"></script>
 </body>
 </html>

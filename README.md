@@ -4,7 +4,15 @@ Projeto de worldbuilding e personagens originais em estilo mangá (preto e branc
 
 ## Como ver
 
-Abra o `index.html` da raiz no navegador — ele é o hub que leva para todas as seções. Cada seção também funciona sozinha.
+Abra o `index.html` da raiz no navegador — é um **portfólio interativo** com animações, partículas e navegação suave que leva para todas as seções. Cada seção também funciona sozinha.
+
+### Portfólio interativo
+
+- Hero animado com partículas e orbes de luz
+- Navegação fixa com scroll suave
+- Cards com efeito 3D ao passar o mouse
+- Contadores animados e revelação ao rolar a página
+- Linha do tempo da construção do universo
 
 ## Estrutura
 
