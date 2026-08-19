@@ -3,35 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Radar Tributário — planejamento fiscal inteligente para pequeno, médio e grande porte." />
-  <title>Radar Tributário</title>
+  <meta name="description" content="Radar Reciclagem — ferramentas fiscais e comerciais para catadores, cooperativas, galpões e indústrias de reciclagem." />
+  <title>Radar Reciclagem</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/fiscal.css" />
 </head>
 <body>
-  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-mesh eco" aria-hidden="true"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-icon">◉</div>
+      <div class="brand-icon eco">♻</div>
       <div>
         <strong>Radar</strong>
-        <span>Tributário</span>
+        <span>Reciclagem</span>
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="#dashboard" class="nav-item active" data-section="dashboard">Dashboard</a>
-      <a href="#simular" class="nav-item" data-section="simular">Simular</a>
-      <a href="#limites" class="nav-item" data-section="limites">Limites</a>
-      <a href="#projecao" class="nav-item" data-section="projecao">Projeção</a>
-      <a href="#cenarios" class="nav-item" data-section="cenarios">E se?</a>
+      <a href="#dashboard" class="nav-item active" data-section="dashboard">Início</a>
+      <a href="#perfil" class="nav-item" data-section="perfil">Seu perfil</a>
+      <a href="#materiais" class="nav-item" data-section="materiais">Cotações</a>
+      <a href="#vendas" class="nav-item" data-section="vendas">Calc. vendas</a>
+      <a href="#simular" class="nav-item" data-section="simular">Fiscal</a>
+      <a href="#compliance" class="nav-item" data-section="compliance">Ambiental</a>
+      <a href="#mercado" class="nav-item" data-section="mercado">Ir ao mercado</a>
       <a href="#checklist" class="nav-item" data-section="checklist">Checklist</a>
-      <a href="#calendario" class="nav-item" data-section="calendario">Calendário</a>
-      <a href="#historico" class="nav-item" data-section="historico">Histórico</a>
       <a href="#alertas" class="nav-item" data-section="alertas">Alertas</a>
-      <a href="#plano" class="nav-item" data-section="plano">Plano 30 dias</a>
     </nav>
     <a href="../index.html" class="sidebar-back">← Portfólio</a>
   </aside>
@@ -40,134 +39,199 @@
     <header class="app-header">
       <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
       <div class="header-text">
-        <h1>Planejamento fiscal inteligente</h1>
-        <p>Compare regimes, preveja impostos e organize sua estratégia — dentro da lei.</p>
+        <h1>Reciclagem a mercado — do galpão à venda</h1>
+        <p>Preços, margens, fiscal e compliance para catadores, cooperativas, galpões e indústrias.</p>
       </div>
       <div class="header-actions">
-        <button type="button" id="btnNovaEmpresa" class="btn btn-ghost">+ Empresa</button>
+        <button type="button" id="btnNovaEmpresa" class="btn btn-ghost">+ Operação</button>
         <button type="button" id="btnWhatsApp" class="btn btn-outline" disabled title="Compartilhar resumo">WhatsApp</button>
         <button type="button" id="btnExportarPdf" class="btn btn-outline" disabled>Exportar PDF</button>
       </div>
     </header>
 
     <main class="app-main">
-      <!-- Empresas -->
+      <!-- Operações salvas -->
       <section class="glass companies-bar" id="dashboard">
-        <div class="section-label">Empresas cadastradas</div>
+        <div class="section-label">Operações cadastradas</div>
         <div id="listaEmpresas" class="company-list"></div>
       </section>
 
-      <!-- KPIs (aparecem após simular) -->
-      <section class="kpi-grid hidden" id="kpiGrid">
-        <article class="kpi-card">
-          <span class="kpi-label">Regime recomendado</span>
-          <strong class="kpi-value" id="kpiRegime">—</strong>
-          <span class="kpi-hint">Melhor custo estimado</span>
+      <!-- Segmentos atendidos -->
+      <section class="segment-grid" id="perfil">
+        <article class="glass segment-card active" data-segment="catador">
+          <span class="segment-icon">🧤</span>
+          <h3>Catador / Autônomo</h3>
+          <p>MEI, nota de compra, rotas e venda para galpão ou atravessador.</p>
         </article>
-        <article class="kpi-card">
-          <span class="kpi-label">Imposto / ano</span>
-          <strong class="kpi-value" id="kpiImposto">—</strong>
-          <span class="kpi-hint">Estimativa anual</span>
+        <article class="glass segment-card" data-segment="cooperativa">
+          <span class="segment-icon">🤝</span>
+          <h3>Cooperativa</h3>
+          <p>Rateio, associados, DAS e venda em volume para indústria.</p>
         </article>
-        <article class="kpi-card accent">
-          <span class="kpi-label">Economia potencial</span>
-          <strong class="kpi-value" id="kpiEconomia">—</strong>
-          <span class="kpi-hint">vs. 2º melhor regime</span>
+        <article class="glass segment-card" data-segment="galpao">
+          <span class="segment-icon">🏭</span>
+          <h3>Galpão / Triagem</h3>
+          <p>Compra, separação, beneficiamento leve e revenda.</p>
         </article>
-        <article class="kpi-card">
-          <span class="kpi-label">Reserva mensal</span>
-          <strong class="kpi-value" id="kpiReserva">—</strong>
-          <span class="kpi-hint">Sugestão para caixa</span>
+        <article class="glass segment-card" data-segment="beneficiador">
+          <span class="segment-icon">⚙</span>
+          <h3>Beneficiador</h3>
+          <p>Processamento, fardo, qualidade e contrato B2B.</p>
+        </article>
+        <article class="glass segment-card" data-segment="industria">
+          <span class="segment-icon">🏢</span>
+          <h3>Indústria recicladora</h3>
+          <p>Matéria-prima secundária, ICMS, escala e logística reversa.</p>
         </article>
       </section>
 
+      <!-- KPIs -->
+      <section class="kpi-grid hidden" id="kpiGrid">
+        <article class="kpi-card">
+          <span class="kpi-label">Receita estimada</span>
+          <strong class="kpi-value" id="kpiReceita">—</strong>
+          <span class="kpi-hint">Vendas do mês simulado</span>
+        </article>
+        <article class="kpi-card accent">
+          <span class="kpi-label">Margem líquida</span>
+          <strong class="kpi-value" id="kpiMargem">—</strong>
+          <span class="kpi-hint">Após custos e impostos</span>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Regime fiscal</span>
+          <strong class="kpi-value" id="kpiRegime">—</strong>
+          <span class="kpi-hint">Recomendação estimada</span>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Volume / mês</span>
+          <strong class="kpi-value" id="kpiVolume">—</strong>
+          <span class="kpi-hint">Kg totais na simulação</span>
+        </article>
+      </section>
+
+      <!-- Cotações de materiais -->
+      <section class="glass panel" id="materiais">
+        <div class="panel-header row">
+          <div>
+            <h2>Cotações de materiais recicláveis</h2>
+            <p>Referência de mercado (R$/kg) — ajuste conforme sua região</p>
+          </div>
+          <button type="button" id="btnResetPrecos" class="btn btn-ghost btn-sm">Restaurar padrão</button>
+        </div>
+        <div id="materiaisGrid" class="materials-grid"></div>
+        <p class="disclaimer">Valores indicativos para planejamento. Confirme cotação com comprador antes de vender.</p>
+      </section>
+
+      <!-- Calculadora de vendas -->
+      <section class="glass panel" id="vendas">
+        <div class="panel-header row">
+          <div>
+            <h2>Calculadora de vendas ao mercado</h2>
+            <p>Monte lotes por material e veja receita, custo e margem</p>
+          </div>
+          <button type="button" id="btnAddLote" class="btn btn-secondary btn-sm">+ Adicionar lote</button>
+        </div>
+        <div id="lotesContainer" class="lotes-container"></div>
+        <div id="vendasResumo" class="vendas-resumo">
+          <article><span>Receita bruta</span><strong id="vrReceita">R$ 0</strong></article>
+          <article><span>Custo aquisição</span><strong id="vrCusto">R$ 0</strong></article>
+          <article><span>Margem operacional</span><strong id="vrMargem">R$ 0</strong></article>
+          <article class="accent"><span>Peso total</span><strong id="vrPeso">0 kg</strong></article>
+        </div>
+        <button type="button" id="btnAplicarVendas" class="btn btn-primary" style="margin-top:1rem;width:100%">Aplicar ao diagnóstico fiscal</button>
+      </section>
+
       <div class="main-grid" id="simular">
-        <!-- Formulário -->
         <section class="glass panel form-panel">
           <div class="panel-header">
-            <h2>Diagnóstico da empresa</h2>
-            <p>Preencha os dados para simular cenários tributários.</p>
+            <h2>Diagnóstico fiscal da operação</h2>
+            <p>Dados da sua operação de reciclagem para simular impostos e enquadramento.</p>
           </div>
 
           <form id="simulador">
             <div class="field">
-              <label for="nomeEmpresa">Nome da empresa</label>
-              <input id="nomeEmpresa" type="text" placeholder="Loja Silva LTDA" required />
+              <label for="nomeEmpresa">Nome da operação</label>
+              <input id="nomeEmpresa" type="text" placeholder="Cooperativa Verde / Galpão Sul" required />
             </div>
 
             <div class="field">
-              <label>Porte da operação</label>
-              <div class="porte-pills" id="portePills">
-                <button type="button" class="pill active" data-porte="pequeno">Pequeno</button>
-                <button type="button" class="pill" data-porte="medio">Médio</button>
-                <button type="button" class="pill" data-porte="grande">Grande</button>
+              <label>Perfil da operação</label>
+              <div class="porte-pills" id="segmentPills">
+                <button type="button" class="pill active" data-segment="catador">Catador</button>
+                <button type="button" class="pill" data-segment="cooperativa">Cooperativa</button>
+                <button type="button" class="pill" data-segment="galpao">Galpão</button>
+                <button type="button" class="pill" data-segment="beneficiador">Beneficiador</button>
+                <button type="button" class="pill" data-segment="industria">Indústria</button>
               </div>
-              <select id="porte" hidden>
-                <option value="pequeno" selected>Pequeno</option>
-                <option value="medio">Médio</option>
-                <option value="grande">Grande</option>
+              <select id="segmento" hidden>
+                <option value="catador" selected>Catador</option>
+                <option value="cooperativa">Cooperativa</option>
+                <option value="galpao">Galpão</option>
+                <option value="beneficiador">Beneficiador</option>
+                <option value="industria">Indústria</option>
               </select>
             </div>
 
             <div class="field-row">
               <div class="field">
-                <label for="faturamento">Faturamento anual</label>
-                <div class="input-prefix"><span>R$</span><input id="faturamento" type="number" min="0" step="1000" placeholder="540.000" required /></div>
+                <label for="faturamento">Faturamento anual (vendas)</label>
+                <div class="input-prefix"><span>R$</span><input id="faturamento" type="number" min="0" step="1000" placeholder="180.000" required /></div>
               </div>
               <div class="field">
-                <label for="folha">Folha anual</label>
-                <div class="input-prefix"><span>R$</span><input id="folha" type="number" min="0" step="1000" placeholder="180.000" required /></div>
+                <label for="folha">Folha / pró-labore anual</label>
+                <div class="input-prefix"><span>R$</span><input id="folha" type="number" min="0" step="1000" placeholder="48.000" required /></div>
               </div>
             </div>
 
             <div class="field-row">
               <div class="field">
-                <label for="custos">Custos operacionais</label>
-                <div class="input-prefix"><span>R$</span><input id="custos" type="number" min="0" step="1000" placeholder="120.000" required /></div>
+                <label for="custos">Custos operacionais anuais</label>
+                <div class="input-prefix"><span>R$</span><input id="custos" type="number" min="0" step="1000" placeholder="90.000" required /></div>
               </div>
               <div class="field">
-                <label for="setor">Setor</label>
-                <select id="setor" class="select-modern">
-                  <option value="servicos">Serviços</option>
-                  <option value="comercio">Comércio</option>
-                  <option value="industria">Indústria</option>
+                <label for="tipoOperacao">Tipo de operação</label>
+                <select id="tipoOperacao" class="select-modern">
+                  <option value="comercio">Compra e revenda (sucata)</option>
+                  <option value="beneficiamento">Beneficiamento / triagem</option>
+                  <option value="industria">Industrialização</option>
                 </select>
               </div>
             </div>
 
+            <div class="field">
+              <label for="volumeAnual">Volume processado / ano (kg)</label>
+              <input id="volumeAnual" type="number" min="0" step="100" placeholder="120000" />
+            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary btn-lg">
-                <span>Simular estratégia</span>
+                <span>Simular operação</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </button>
-              <button type="button" id="btnSalvarEmpresa" class="btn btn-secondary">Salvar empresa</button>
+              <button type="button" id="btnSalvarEmpresa" class="btn btn-secondary">Salvar operação</button>
             </div>
-            <p class="disclaimer">Simulação educacional. Valide decisões finais com seu contador.</p>
+            <p class="disclaimer">Simulação educacional. Valide CNAE, licenças e tributos com contador e órgão ambiental.</p>
           </form>
         </section>
 
-        <!-- Resultados -->
         <section class="glass panel result-panel">
           <div class="panel-header">
-            <h2>Comparativo de regimes</h2>
+            <h2>Resultado fiscal e comercial</h2>
             <p id="resultSubtitle">Aguardando simulação…</p>
           </div>
 
           <div id="resumo" class="result-empty">
-            <div class="empty-icon">📊</div>
-            <p>Preencha o formulário e clique em <strong>Simular estratégia</strong> para ver recomendações.</p>
+            <div class="empty-icon">♻</div>
+            <p>Preencha o diagnóstico ou use a <strong>Calculadora de vendas</strong> para simular sua operação.</p>
           </div>
 
+          <div id="limitesInline" class="limits-grid hidden"></div>
           <div id="chartArea" class="chart-area hidden"></div>
 
           <div class="table-modern hidden" id="tableWrap">
             <table>
               <thead>
-                <tr>
-                  <th>Regime</th>
-                  <th>Imposto/ano</th>
-                  <th>Alíquota</th>
-                </tr>
+                <tr><th>Regime</th><th>Imposto/ano</th><th>Alíquota</th></tr>
               </thead>
               <tbody id="tabelaRegimes"></tbody>
             </table>
@@ -175,140 +239,45 @@
         </section>
       </div>
 
-      <!-- Limites de enquadramento -->
-      <section class="glass panel" id="limites">
+      <!-- Compliance ambiental -->
+      <section class="glass panel" id="compliance">
         <div class="panel-header row">
           <div>
-            <h2>Limites de enquadramento</h2>
-            <p>Monitore proximidade dos tetos MEI e Simples Nacional</p>
+            <h2>Compliance ambiental</h2>
+            <p>Requisitos por perfil — PNRS, MTR e licenciamento</p>
           </div>
-          <span id="limitesStatus" class="status-pill ok">Simule para ver</span>
+          <span id="complianceStatus" class="status-pill warn">Selecione perfil</span>
         </div>
-        <div id="limitesContent" class="limits-grid">
-          <article class="limit-card">
-            <div class="limit-head">
-              <strong>MEI</strong>
-              <span class="limit-value">Teto R$ 81.000/ano</span>
-            </div>
-            <div class="limit-bar-wrap"><div class="limit-bar" id="limitMeiBar" style="width:0%"></div></div>
-            <p class="limit-meta" id="limitMeiMeta">Informe o faturamento na simulação</p>
-          </article>
-          <article class="limit-card">
-            <div class="limit-head">
-              <strong>Simples Nacional</strong>
-              <span class="limit-value">Teto R$ 4,8 mi/ano</span>
-            </div>
-            <div class="limit-bar-wrap"><div class="limit-bar blue" id="limitSimplesBar" style="width:0%"></div></div>
-            <p class="limit-meta" id="limitSimplesMeta">Informe o faturamento na simulação</p>
-          </article>
-        </div>
-        <div id="meiCompare" class="mei-compare hidden">
-          <h3>MEI vs Simples — comparativo rápido</h3>
-          <div class="compare-cards" id="meiCompareCards"></div>
-        </div>
+        <div id="complianceList" class="compliance-list"></div>
       </section>
 
-      <!-- Projeção 12 meses -->
-      <section class="glass panel" id="projecao">
+      <!-- Ir ao mercado -->
+      <section class="glass panel" id="mercado">
         <div class="panel-header">
-          <h2>Projeção mensal — 12 meses</h2>
-          <p>Reserva tributária sugerida mês a mês com base no regime ideal</p>
+          <h2>Como ir ao mercado</h2>
+          <p>Canais de venda e dicas para maximizar receita com legalidade</p>
         </div>
-        <div id="projecaoEmpty" class="result-empty compact">
-          <p>Simule uma empresa para ver a projeção de reserva tributária.</p>
-        </div>
-        <div id="projecaoChart" class="projection-chart hidden"></div>
-        <div class="table-modern hidden" id="projecaoTableWrap">
-          <table>
-            <thead>
-              <tr><th>Mês</th><th>Reserva sugerida</th><th>Acumulado</th></tr>
-            </thead>
-            <tbody id="projecaoTable"></tbody>
-          </table>
-        </div>
+        <div id="mercadoContent" class="mercado-grid"></div>
       </section>
 
-      <!-- Cenários E se? -->
-      <section class="glass panel" id="cenarios">
-        <div class="panel-header">
-          <h2>Simulador "E se?"</h2>
-          <p>Projete o impacto de crescimento no faturamento</p>
-        </div>
-        <div class="scenario-controls">
-          <label for="crescimentoSlider">Crescimento anual projetado</label>
-          <div class="slider-row">
-            <input type="range" id="crescimentoSlider" min="-20" max="50" value="0" step="5" />
-            <output id="crescimentoValue" for="crescimentoSlider">0%</output>
-          </div>
-        </div>
-        <div id="cenarioResult" class="cenario-result">
-          <p class="cenario-hint">Ajuste o slider após simular para ver cenários alternativos.</p>
-        </div>
-      </section>
-
-      <!-- Checklist fiscal -->
+      <!-- Checklist -->
       <section class="glass panel" id="checklist">
         <div class="panel-header row">
           <div>
-            <h2>Checklist fiscal mensal</h2>
-            <p>Tarefas recorrentes — progresso salvo automaticamente</p>
+            <h2>Checklist operacional mensal</h2>
+            <p>Rotina de reciclagem + fiscal — progresso salvo automaticamente</p>
           </div>
           <span id="checklistProgress" class="status-pill ok">0/0</span>
         </div>
         <ul id="checklistItems" class="checklist"></ul>
       </section>
 
-      <!-- Calendário fiscal -->
-      <section class="glass panel" id="calendario">
-        <div class="panel-header row">
-          <div>
-            <h2>Calendário fiscal</h2>
-            <p>Obrigações do mês atual</p>
-          </div>
-          <span id="calMesLabel" class="status-pill ok"></span>
-        </div>
-        <div id="calendarioGrid" class="calendar-grid"></div>
-      </section>
-
-      <!-- Histórico -->
-      <section class="glass panel" id="historico">
-        <div class="panel-header row">
-          <div>
-            <h2>Histórico de simulações</h2>
-            <p>Últimas simulações realizadas neste dispositivo</p>
-          </div>
-          <button type="button" id="btnLimparHistorico" class="btn btn-ghost btn-sm">Limpar</button>
-        </div>
-        <div id="historicoLista" class="history-list empty-hint">
-          <p>Nenhuma simulação registrada ainda.</p>
-        </div>
-      </section>
-
-      <!-- Portes info -->
-      <section class="tier-grid">
-        <article class="glass tier-card" id="tier-pequeno">
-          <div class="tier-icon">🚀</div>
-          <h3>Pequeno</h3>
-          <p>Acima do MEI — transição segura, controle de caixa e prevenção de multas.</p>
-        </article>
-        <article class="glass tier-card" id="tier-medio">
-          <div class="tier-icon">📈</div>
-          <h3>Médio</h3>
-          <p>Simples × Presumido com impacto de folha, margem e pró-labore.</p>
-        </article>
-        <article class="glass tier-card" id="tier-grande">
-          <div class="tier-icon">🏢</div>
-          <h3>Grande</h3>
-          <p>Governança fiscal, riscos tributários e simulação de expansão.</p>
-        </article>
-      </section>
-
       <!-- Alertas -->
       <section class="glass panel" id="alertas">
         <div class="panel-header row">
           <div>
-            <h2>Alertas de vencimento</h2>
-            <p>Obrigações fiscais com prazo próximo</p>
+            <h2>Alertas e obrigações</h2>
+            <p>Vencimentos fiscais e lembretes operacionais</p>
           </div>
           <span id="alertasResumo" class="status-pill warn">0 pendentes</span>
         </div>
@@ -318,20 +287,15 @@
       <!-- Plano -->
       <section class="glass panel" id="plano">
         <div class="panel-header">
-          <h2>Plano de ação — 30 dias</h2>
-          <p>Passos práticos para organizar sua rotina fiscal.</p>
+          <h2>Plano de ação — 30 dias no mercado</h2>
+          <p>Passos práticos para profissionalizar e vender mais</p>
         </div>
-        <ol id="planoAcao" class="action-list">
-          <li><span class="step-num">1</span><span>Atualize faturamento e despesas dos últimos 12 meses.</span></li>
-          <li><span class="step-num">2</span><span>Revise CNAE e anexo no Simples com o contador.</span></li>
-          <li><span class="step-num">3</span><span>Crie reserva mensal exclusiva para tributos.</span></li>
-          <li><span class="step-num">4</span><span>Ative alertas de vencimento DAS, FGTS e guias.</span></li>
-        </ol>
+        <ol id="planoAcao" class="action-list"></ol>
       </section>
     </main>
 
     <footer class="app-footer">
-      <p>Radar Tributário · Planejamento dentro da legislação vigente</p>
+      <p>Radar Reciclagem · Economia circular com conformidade fiscal e ambiental</p>
     </footer>
   </div>
 
