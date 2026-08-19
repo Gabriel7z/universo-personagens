@@ -6,6 +6,14 @@ Projeto de worldbuilding e personagens originais em estilo mangá (preto e branc
 
 Abra o `index.html` da raiz no navegador — é um **portfólio interativo** com animações, partículas e navegação suave que leva para todas as seções. Cada seção também funciona sozinha.
 
+## Site online (GitHub Pages)
+
+**URL:** https://gabriel7z.github.io/universo-personagens/
+
+> Se o link ainda não abrir, ative o GitHub Pages em  
+> [Settings → Pages](https://github.com/Gabriel7z/universo-personagens/settings/pages)  
+> e escolha **Source: GitHub Actions**. Depois, rode o workflow **Deploy GitHub Pages** em Actions.
+
 ### Portfólio interativo
 
 - Hero animado com partículas e orbes de luz
