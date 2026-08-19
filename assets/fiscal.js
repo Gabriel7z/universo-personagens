@@ -2,6 +2,24 @@
   "use strict";
 
   var STORAGE_KEY = "radarTributarioEmpresas";
+  var HISTORY_KEY = "radarTributarioHistorico";
+  var CHECKLIST_KEY = "radarTributarioChecklist";
+
+  var LIMIT_MEI = 81000;
+  var LIMIT_SIMPLES = 4800000;
+  var MEI_TAX = 0.06;
+
+  var CHECKLIST_ITEMS = [
+    { id: "nf", label: "Emitir notas fiscais do mês" },
+    { id: "das", label: "Conferir guia DAS / impostos federais" },
+    { id: "fgts", label: "Recolher FGTS e encargos trabalhistas" },
+    { id: "iss", label: "Apurar ISS municipal" },
+    { id: "caixa", label: "Separar reserva tributária no caixa" },
+    { id: "dre", label: "Atualizar DRE e fluxo de caixa" },
+    { id: "contador", label: "Enviar documentos ao contador" }
+  ];
+
+  var MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
   var form = document.getElementById("simulador");
   var tabela = document.getElementById("tabelaRegimes");
@@ -11,8 +29,10 @@
   var listaAlertas = document.getElementById("listaAlertas");
   var alertasResumo = document.getElementById("alertasResumo");
   var btnExportarPdf = document.getElementById("btnExportarPdf");
+  var btnWhatsApp = document.getElementById("btnWhatsApp");
   var btnSalvarEmpresa = document.getElementById("btnSalvarEmpresa");
   var btnNovaEmpresa = document.getElementById("btnNovaEmpresa");
+  var btnLimparHistorico = document.getElementById("btnLimparHistorico");
   var kpiGrid = document.getElementById("kpiGrid");
   var chartArea = document.getElementById("chartArea");
   var tableWrap = document.getElementById("tableWrap");
@@ -22,8 +42,12 @@
   var toast = document.getElementById("toast");
   var menuBtn = document.getElementById("menuBtn");
   var sidebar = document.getElementById("sidebar");
+  var crescimentoSlider = document.getElementById("crescimentoSlider");
+  var crescimentoValue = document.getElementById("crescimentoValue");
+  var cenarioResult = document.getElementById("cenarioResult");
 
   var REGIME_LABELS = {
+    mei: "MEI",
     simples: "Simples Nacional",
     presumido: "Lucro Presumido",
     real: "Lucro Real"
@@ -44,6 +68,10 @@
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
   }
 
+  function pct(value) {
+    return value.toFixed(1) + "%";
+  }
+
   function showToast(msg, type) {
     toast.textContent = msg;
     toast.className = "toast" + (type ? " " + type : "");
@@ -59,6 +87,24 @@
 
   function saveCompanies(list) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }
+    catch (e) { return []; }
+  }
+
+  function saveHistory(list) {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 20)));
+  }
+
+  function loadChecklistState() {
+    try { return JSON.parse(localStorage.getItem(CHECKLIST_KEY) || "{}"); }
+    catch (e) { return {}; }
+  }
+
+  function saveChecklistState(state) {
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
   }
 
   function uid() {
@@ -105,6 +151,14 @@
     return Math.max(0.04, rate);
   }
 
+  function simulateMEI(faturamento) {
+    return {
+      regime: "mei",
+      aliquota: MEI_TAX,
+      imposto: faturamento * MEI_TAX
+    };
+  }
+
   function simulate(data) {
     if (data.faturamento <= 0) return null;
     var folhaRatio = data.folha / data.faturamento;
@@ -123,6 +177,257 @@
       margemLiquida: ((data.faturamento - data.custos - best.imposto) / data.faturamento) * 100,
       reservaMensal: best.imposto / 12
     };
+  }
+
+  function simulateWithGrowth(data, growthPct) {
+    var factor = 1 + growthPct / 100;
+    var adjusted = Object.assign({}, data, { faturamento: data.faturamento * factor });
+    return simulate(adjusted);
+  }
+
+  function limitStatus(ratio) {
+    if (ratio >= 95) return { cls: "danger", label: "Crítico" };
+    if (ratio >= 80) return { cls: "warn", label: "Atenção" };
+    return { cls: "ok", label: "Seguro" };
+  }
+
+  function renderLimits(result) {
+    var fat = result ? result.input.faturamento : 0;
+    var meiPct = Math.min(100, (fat / LIMIT_MEI) * 100);
+    var simplesPct = Math.min(100, (fat / LIMIT_SIMPLES) * 100);
+    var meiSt = limitStatus(meiPct);
+    var simplesSt = limitStatus(simplesPct);
+
+    document.getElementById("limitMeiBar").style.width = meiPct + "%";
+    document.getElementById("limitMeiBar").className = "limit-bar " + meiSt.cls;
+    document.getElementById("limitMeiMeta").textContent = fat
+      ? brl(fat) + " (" + pct(meiPct) + " do teto) — " + (fat > LIMIT_MEI ? "Acima do MEI" : "Dentro do MEI")
+      : "Informe o faturamento na simulação";
+
+    document.getElementById("limitSimplesBar").style.width = simplesPct + "%";
+    document.getElementById("limitSimplesBar").className = "limit-bar blue " + simplesSt.cls;
+    document.getElementById("limitSimplesMeta").textContent = fat
+      ? brl(fat) + " (" + pct(simplesPct) + " do teto) — " + (fat > LIMIT_SIMPLES ? "Fora do Simples" : "Elegível ao Simples")
+      : "Informe o faturamento na simulação";
+
+    var worst = meiPct > simplesPct ? meiSt : simplesSt;
+    var statusEl = document.getElementById("limitesStatus");
+    statusEl.textContent = fat ? worst.label : "Simule para ver";
+    statusEl.className = "status-pill " + (fat ? worst.cls : "ok");
+
+    renderMEICompare(result);
+  }
+
+  function renderMEICompare(result) {
+    var wrap = document.getElementById("meiCompare");
+    var cards = document.getElementById("meiCompareCards");
+    if (!result || result.input.porte !== "pequeno" || result.input.faturamento > LIMIT_MEI) {
+      wrap.classList.add("hidden");
+      return;
+    }
+    var fat = result.input.faturamento;
+    var mei = simulateMEI(fat);
+    var simples = result.regimes.find(function (r) { return r.regime === "simples"; });
+    var diff = simples.imposto - mei.imposto;
+    var recomendado = diff > 0 ? "mei" : "simples";
+
+    wrap.classList.remove("hidden");
+    cards.innerHTML =
+      "<article class='compare-card" + (recomendado === "mei" ? " best" : "") + "'>" +
+        "<span class='compare-tag'>MEI</span>" +
+        "<strong>" + brl(mei.imposto) + "/ano</strong>" +
+        "<span>Alíquota ~6% · teto R$ 81k</span>" +
+      "</article>" +
+      "<article class='compare-card" + (recomendado === "simples" ? " best" : "") + "'>" +
+        "<span class='compare-tag'>Simples</span>" +
+        "<strong>" + brl(simples.imposto) + "/ano</strong>" +
+        "<span>Alíquota " + (simples.aliquota * 100).toFixed(1) + "%</span>" +
+      "</article>" +
+      "<article class='compare-card diff'>" +
+        "<span class='compare-tag'>Diferença</span>" +
+        "<strong>" + brl(Math.abs(diff)) + "/ano</strong>" +
+        "<span>" + (diff > 0 ? "MEI mais barato neste cenário" : "Simples mais vantajoso") + "</span>" +
+      "</article>";
+  }
+
+  function renderProjection(result) {
+    var empty = document.getElementById("projecaoEmpty");
+    var chart = document.getElementById("projecaoChart");
+    var tableWrapEl = document.getElementById("projecaoTableWrap");
+    var tableBody = document.getElementById("projecaoTable");
+
+    if (!result) {
+      empty.classList.remove("hidden");
+      chart.classList.add("hidden");
+      tableWrapEl.classList.add("hidden");
+      return;
+    }
+
+    empty.classList.add("hidden");
+    chart.classList.remove("hidden");
+    tableWrapEl.classList.remove("hidden");
+
+    var mensal = result.reservaMensal;
+    var max = mensal;
+    var acum = 0;
+    var now = new Date();
+    var startMonth = now.getMonth();
+
+    chart.innerHTML = MESES.map(function (nome, i) {
+      var idx = (startMonth + i) % 12;
+      var h = Math.max(8, Math.round((mensal / max) * 100));
+      return "<div class='proj-col'>" +
+        "<div class='proj-bar' style='height:" + h + "%' title='" + brl(mensal) + "'></div>" +
+        "<span>" + MESES[idx] + "</span>" +
+      "</div>";
+    }).join("");
+
+    tableBody.innerHTML = MESES.map(function (nome, i) {
+      acum += mensal;
+      var idx = (startMonth + i) % 12;
+      return "<tr><td>" + MESES[idx] + "/" + now.getFullYear() + "</td><td>" + brl(mensal) + "</td><td>" + brl(acum) + "</td></tr>";
+    }).join("");
+  }
+
+  function renderScenario(result) {
+    if (!result) {
+      cenarioResult.innerHTML = "<p class='cenario-hint'>Ajuste o slider após simular para ver cenários alternativos.</p>";
+      return;
+    }
+    var growth = Number(crescimentoSlider.value);
+    crescimentoValue.textContent = (growth > 0 ? "+" : "") + growth + "%";
+    var projected = simulateWithGrowth(result.input, growth);
+    if (!projected) return;
+
+    var newFat = result.input.faturamento * (1 + growth / 100);
+    var diffImposto = projected.best.imposto - result.best.imposto;
+    var regimeChanged = projected.best.regime !== result.best.regime;
+
+    cenarioResult.innerHTML =
+      "<div class='cenario-cards'>" +
+        "<article class='cenario-card'>" +
+          "<span>Faturamento projetado</span><strong>" + brl(newFat) + "/ano</strong>" +
+        "</article>" +
+        "<article class='cenario-card'>" +
+          "<span>Regime projetado</span><strong>" + REGIME_LABELS[projected.best.regime] + "</strong>" +
+          (regimeChanged ? "<em class='cenario-change'>Mudança de regime</em>" : "") +
+        "</article>" +
+        "<article class='cenario-card accent'>" +
+          "<span>Imposto projetado</span><strong>" + brl(projected.best.imposto) + "/ano</strong>" +
+          "<em>" + (diffImposto >= 0 ? "+" : "") + brl(diffImposto) + " vs. atual</em>" +
+        "</article>" +
+        "<article class='cenario-card'>" +
+          "<span>Reserva mensal</span><strong>" + brl(projected.reservaMensal) + "</strong>" +
+        "</article>" +
+      "</div>";
+  }
+
+  function renderChecklist() {
+    var state = loadChecklistState();
+    var monthKey = new Date().getFullYear() + "-" + (new Date().getMonth() + 1);
+    var monthState = state[monthKey] || {};
+    var list = document.getElementById("checklistItems");
+    var done = 0;
+
+    list.innerHTML = CHECKLIST_ITEMS.map(function (item) {
+      var checked = !!monthState[item.id];
+      if (checked) done++;
+      return "<li class='check-item" + (checked ? " done" : "") + "'>" +
+        "<label><input type='checkbox' data-id='" + item.id + "' " + (checked ? "checked" : "") + " />" +
+        "<span>" + item.label + "</span></label></li>";
+    }).join("");
+
+    document.getElementById("checklistProgress").textContent = done + "/" + CHECKLIST_ITEMS.length;
+    document.getElementById("checklistProgress").className = "status-pill " + (done === CHECKLIST_ITEMS.length ? "ok" : "warn");
+
+    list.querySelectorAll("input[type=checkbox]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var st = loadChecklistState();
+        if (!st[monthKey]) st[monthKey] = {};
+        st[monthKey][cb.dataset.id] = cb.checked;
+        saveChecklistState(st);
+        renderChecklist();
+      });
+    });
+  }
+
+  function renderCalendar(porte) {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth();
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var firstDay = new Date(year, month, 1).getDay();
+
+    document.getElementById("calMesLabel").textContent = MESES[month] + " " + year;
+
+    var filtered = OBRIGACOES.filter(function (o) {
+      if (porte === "pequeno") return ["das", "fgts", "iss"].indexOf(o.id) >= 0;
+      return true;
+    });
+
+    var eventsByDay = {};
+    filtered.forEach(function (o) {
+      if (o.meses && o.meses.indexOf(month + 1) < 0) return;
+      if (!eventsByDay[o.dia]) eventsByDay[o.dia] = [];
+      eventsByDay[o.dia].push(o);
+    });
+
+    var html = "<div class='cal-weekdays'>" +
+      ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(function (d) {
+        return "<span>" + d + "</span>";
+      }).join("") + "</div><div class='cal-days'>";
+
+    for (var i = 0; i < firstDay; i++) html += "<div class='cal-day empty'></div>";
+
+    for (var day = 1; day <= daysInMonth; day++) {
+      var isToday = day === now.getDate();
+      var events = eventsByDay[day] || [];
+      var cls = "cal-day" + (isToday ? " today" : "") + (events.length ? " has-event" : "");
+      html += "<div class='" + cls + "'>" +
+        "<span class='cal-num'>" + day + "</span>" +
+        (events.length ? "<div class='cal-events'>" + events.map(function (e) {
+          return "<span class='cal-event' title='" + e.desc + "'>" + e.nome + "</span>";
+        }).join("") + "</div>" : "") +
+      "</div>";
+    }
+
+    html += "</div>";
+    document.getElementById("calendarioGrid").innerHTML = html;
+  }
+
+  function addToHistory(result) {
+    var entry = {
+      id: "hist_" + Date.now(),
+      ts: Date.now(),
+      nome: result.input.nome || "Sem nome",
+      faturamento: result.input.faturamento,
+      regime: result.best.regime,
+      imposto: result.best.imposto,
+      porte: result.input.porte
+    };
+    var list = loadHistory();
+    list.unshift(entry);
+    saveHistory(list);
+    renderHistory();
+  }
+
+  function renderHistory() {
+    var list = loadHistory();
+    var el = document.getElementById("historicoLista");
+    if (!list.length) {
+      el.className = "history-list empty-hint";
+      el.innerHTML = "<p>Nenhuma simulação registrada ainda.</p>";
+      return;
+    }
+    el.className = "history-list";
+    el.innerHTML = list.map(function (h) {
+      var date = new Date(h.ts).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+      return "<article class='history-item'>" +
+        "<div class='history-main'><strong>" + h.nome + "</strong>" +
+        "<span>" + REGIME_LABELS[h.regime] + " · " + brl(h.imposto) + "/ano</span></div>" +
+        "<div class='history-meta'>" + date + " · " + brl(h.faturamento) + " fat.</div>" +
+      "</article>";
+    }).join("");
   }
 
   function buildPlan(porte, bestRegime, economiaAno) {
@@ -155,11 +460,11 @@
   function renderChart(items, best) {
     var max = items[0].imposto;
     chartArea.innerHTML = items.map(function (item) {
-      var pct = Math.round((item.imposto / max) * 100);
+      var pctVal = Math.round((item.imposto / max) * 100);
       var isBest = item.regime === best.regime;
       return "<div class='chart-row'>" +
         "<span class='chart-label" + (isBest ? " best" : "") + "'>" + REGIME_LABELS[item.regime] + "</span>" +
-        "<div class='chart-bar-wrap'><div class='chart-bar" + (isBest ? " best" : "") + "' style='width:0%' data-w='" + pct + "'></div></div>" +
+        "<div class='chart-bar-wrap'><div class='chart-bar" + (isBest ? " best" : "") + "' style='width:0%' data-w='" + pctVal + "'></div></div>" +
         "<span class='chart-value'>" + brl(item.imposto) + "</span>" +
       "</div>";
     }).join("");
@@ -196,10 +501,26 @@
     });
   }
 
+  function shareWhatsApp() {
+    if (!lastResult) return;
+    var d = lastResult.input;
+    var best = lastResult.best;
+    var text = "📊 *Radar Tributário*\n\n" +
+      "Empresa: " + (d.nome || "—") + "\n" +
+      "Faturamento: " + brl(d.faturamento) + "/ano\n" +
+      "Regime recomendado: " + REGIME_LABELS[best.regime] + "\n" +
+      "Imposto estimado: " + brl(best.imposto) + "/ano\n" +
+      "Reserva mensal: " + brl(lastResult.reservaMensal) + "\n" +
+      "Economia potencial: " + brl(lastResult.economiaAno) + "\n\n" +
+      "_Simulação educacional — valide com seu contador._";
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+  }
+
   function renderResult(result) {
     if (!result) return;
     lastResult = result;
     btnExportarPdf.disabled = false;
+    btnWhatsApp.disabled = false;
 
     var d = result.input;
     var best = result.best;
@@ -219,6 +540,11 @@
     renderChart(result.regimes, best);
     renderTable(result.regimes, best);
     setTierActive(d.porte);
+    renderLimits(result);
+    renderProjection(result);
+    renderScenario(result);
+    renderCalendar(d.porte);
+    addToHistory(result);
 
     planoAcao.innerHTML = buildPlan(d.porte, best.regime, result.economiaAno).map(function (item, i) {
       return "<li><span class='step-num'>" + (i + 1) + "</span><span>" + item + "</span></li>";
@@ -333,6 +659,7 @@
   function resetResults() {
     lastResult = null;
     btnExportarPdf.disabled = true;
+    btnWhatsApp.disabled = true;
     kpiGrid.classList.add("hidden");
     chartArea.classList.add("hidden");
     tableWrap.classList.add("hidden");
@@ -340,6 +667,9 @@
     resumo.innerHTML = "<div class='empty-icon'>📊</div><p>Preencha o formulário e clique em <strong>Simular estratégia</strong>.</p>";
     resultSubtitle.textContent = "Aguardando simulação…";
     tabela.innerHTML = "";
+    renderLimits(null);
+    renderProjection(null);
+    renderScenario(null);
   }
 
   function exportPdf() {
@@ -381,6 +711,12 @@
 
   if (menuBtn) menuBtn.addEventListener("click", function () { sidebar.classList.toggle("open"); });
 
+  if (crescimentoSlider) {
+    crescimentoSlider.addEventListener("input", function () {
+      renderScenario(lastResult);
+    });
+  }
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var result = simulate(getFormData());
@@ -402,12 +738,26 @@
     resetResults();
     renderCompanies();
     renderAlerts("pequeno", 0);
+    renderCalendar("pequeno");
     document.getElementById("nomeEmpresa").focus();
     showToast("Nova empresa");
   });
 
   btnExportarPdf.addEventListener("click", exportPdf);
+  btnWhatsApp.addEventListener("click", shareWhatsApp);
+
+  if (btnLimparHistorico) {
+    btnLimparHistorico.addEventListener("click", function () {
+      saveHistory([]);
+      renderHistory();
+      showToast("Histórico limpo");
+    });
+  }
 
   renderCompanies();
   renderAlerts("pequeno", 0);
+  renderChecklist();
+  renderCalendar("pequeno");
+  renderHistory();
+  renderLimits(null);
 })();
