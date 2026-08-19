@@ -33,6 +33,7 @@ Ative em [Settings → Pages](https://github.com/Gabriel7z/universo-personagens/
 
 | Pasta | Conteúdo |
 |---|---|
+| `mapa/` | Mapa interativo da Faixa do Crepúsculo (Aethon) e Terras Externas (Kriston, Bellum, Resistência 01, Terras de Fogo) |
 | `aethon/` | Mundo de fantasia sombria do Sol Imóvel: Capítulo 01 ilustrado (Vesna no Setor V) e o dossiê dos três mais fortes (Vesna, O Vigia do Véu, Solenne das Torres) |
 | `uriel/` | Uriel, o Braço de Ferro — guerreiro viking com braço mecânico e poder de fogo. Galeria de análise, ficha, história e poderes |
 | `nazura/` | Nazura Eidhame, o Domador das Trevas — líder da Resistência 01, com a katana Ilamia e a Neo do Controle da Escuridão (baseado na ficha oficial em PDF) |
