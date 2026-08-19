@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Radar Tributário — simulador fiscal por porte empresarial para planejamento tributário legal." />
+  <title>Radar Tributário</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>RADAR TRIBUTÁRIO</h1>
+    <p>Estratégia fiscal para pequeno (acima do MEI), médio e grande.</p>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <h2>Pague só o necessário, dentro da lei</h2>
+      <p>
+        Simule regimes tributários, compare cenários e receba um plano de ação mensal para melhorar previsibilidade e reduzir surpresas no caixa.
+      </p>
+      <div class="hero-tags">
+        <span>Planejamento legal</span>
+        <span>Comparativo de regimes</span>
+        <span>Alertas de vencimento</span>
+        <span>Exportar PDF</span>
+      </div>
+    </section>
+
+    <section class="card companies-panel">
+      <div class="panel-head">
+        <h3>Minhas empresas</h3>
+        <button type="button" id="btnNovaEmpresa" class="btn-secondary">+ Nova empresa</button>
+      </div>
+      <div id="listaEmpresas" class="company-list"></div>
+    </section>
+
+    <section class="layout">
+      <form id="simulador" class="card form-panel">
+        <h3>Diagnóstico rápido</h3>
+
+        <label>Nome da empresa
+          <input id="nomeEmpresa" type="text" placeholder="Ex.: Loja Silva LTDA" required />
+        </label>
+
+        <label>Porte atual
+          <select id="porte" required>
+            <option value="pequeno">Pequeno (acima do MEI)</option>
+            <option value="medio">Médio</option>
+            <option value="grande">Grande</option>
+          </select>
+        </label>
+
+        <label>Faturamento anual (R$)
+          <input id="faturamento" type="number" min="0" step="1000" placeholder="Ex.: 540000" required />
+        </label>
+
+        <label>Folha anual (R$)
+          <input id="folha" type="number" min="0" step="1000" placeholder="Ex.: 180000" required />
+        </label>
+
+        <label>Custos operacionais anuais (R$)
+          <input id="custos" type="number" min="0" step="1000" placeholder="Ex.: 120000" required />
+        </label>
+
+        <label>Setor de atividade
+          <select id="setor" required>
+            <option value="servicos">Serviços</option>
+            <option value="comercio">Comércio</option>
+            <option value="industria">Indústria</option>
+          </select>
+        </label>
+
+        <div class="btn-row">
+          <button type="submit" class="btn-primary">Simular estratégia</button>
+          <button type="button" id="btnSalvarEmpresa" class="btn-secondary">Salvar empresa</button>
+        </div>
+        <p class="notice">* Simulação educacional. Decisão final deve ser validada com contador.</p>
+      </form>
+
+      <section class="card result-panel">
+        <div class="panel-head">
+          <h3>Resultado da simulação</h3>
+          <button type="button" id="btnExportarPdf" class="btn-secondary" disabled>Exportar PDF</button>
+        </div>
+        <div id="resumo" class="summary empty">Preencha o formulário para calcular.</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Regime</th>
+                <th>Imposto estimado/ano</th>
+                <th>% efetiva</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaRegimes"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section class="card alerts-panel">
+      <div class="panel-head">
+        <h3>Alertas de vencimento</h3>
+        <span id="alertasResumo" class="badge">0 pendentes</span>
+      </div>
+      <div id="listaAlertas" class="alerts-list"></div>
+    </section>
+
+    <section class="card actions-panel">
+      <h3>Plano de ação fiscal (30 dias)</h3>
+      <ol id="planoAcao">
+        <li>Atualize faturamento e despesas dos últimos 12 meses.</li>
+        <li>Revise CNAE e anexo no Simples com o contador.</li>
+        <li>Crie reserva mensal exclusiva para tributos.</li>
+        <li>Ative alertas de vencimento DAS, FGTS e guias estaduais.</li>
+      </ol>
+    </section>
+
+    <section class="tiers">
+      <article class="card tier" id="tier-pequeno">
+        <h4>Pequeno (acima do MEI)</h4>
+        <p>Foco em transição segura para Simples, controle de caixa e prevenção de multas por desenquadramento.</p>
+      </article>
+      <article class="card tier" id="tier-medio">
+        <h4>Médio</h4>
+        <p>Comparação Simples x Presumido com impactos de folha, margem e pró-labore para ganho de previsibilidade.</p>
+      </article>
+      <article class="card tier" id="tier-grande">
+        <h4>Grande</h4>
+        <p>Governança fiscal com visão consolidada, riscos tributários e simulação de expansão por unidades.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>Radar Tributário · Planejamento dentro da legislação vigente.</p>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
