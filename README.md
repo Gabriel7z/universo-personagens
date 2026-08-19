@@ -50,6 +50,9 @@ Página em `fiscal/index.html` com:
 - Estimativa de imposto anual e alíquota efetiva
 - Recomendação inicial de regime e economia potencial
 - Plano de ação fiscal em 30 dias
+- Alertas de vencimento (DAS, FGTS, ISS, IRPJ, DEFIS)
+- Cadastro de múltiplas empresas (salvo no navegador)
+- Exportação de relatório em PDF
 
 ## Personagens
 
